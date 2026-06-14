@@ -127,11 +127,10 @@
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
             // OPTIMIERTER PROMPT: Kürzer, aggressiver, fehlerfrei für JSON-Mode
-            const systemPrompt = `Du bist ein Ernährungsrechner. Extrahiere die Lebensmittel.
+            const systemPrompt = `Extrahiere die Lebensmittel.
             Regeln:
-            - Keine Marke genannt? Nimm REWE "ja!" Werte und hänge "(ja!)" an den Namen.
-            - Nimm bei fehlender Menge 1 normale Portion oder 100g an.
-            - Berechne die Kalorien EXAKT nach der Formel: kcal = (protein * 4) + (carbs * 4) + (fett * 9).
+            - Keine Marke genannt nimm eigenmarken von Deutschen Supermaerkten
+            - zahl vor dem Lebensmittel ist entweder Scheibe/Menge oder g/ml, aber nie portion
             - Gib NUR das JSON-Objekt zurück. Keine Erklärungen.
             
             Ausgabe-Format:
