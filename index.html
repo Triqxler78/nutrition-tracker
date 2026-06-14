@@ -3,1148 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Kalorie-Tracker mit Makronährstoffe - Progressive Web App">
-    <title>Kalorie Tracker</title>
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Kalorie-Tracker%22,%22short_name%22:%22kcal%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8f9fa%22,%22theme_color%22:%22%23667eea%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192' rx='45'/><text x='96' y='130' font-size='90' font-weight='bold' fill='white' text-anchor='middle' font-family='system-ui'>kcal</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%22}]}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #667eea;
-            --primary-light: #8b9eff;
-            --danger: #f56565;
-            --warning: #ed8936;
-            --success: #48bb78;
-            --info: #4299e1;
-            --light: #f7fafc;
-            --lighter: #edf2f7;
-            --dark: #2d3748;
-            --text: #1a202c;
-            --text-light: #718096;
-            --border: #e2e8f0;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #f8f9fa 100%);
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 600px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 16px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Header & Summary Card */
-        .header-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
-            color: white;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .header-date {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        .settings-reset-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .icon-btn:active {
-            transform: scale(0.95);
-            background: rgba(255,255,255,0.3);
-        }
-
-        .macros-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .macro-box {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 12px;
-            padding: 12px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-
-        .macro-value {
-            font-size: 20px;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .macro-label {
-            font-size: 12px;
-            opacity: 0.85;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .kcal-large {
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            gap: 2px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .kcal-value {
-            font-size: 48px;
-            font-weight: 800;
-        }
-
-        .kcal-of {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .kcal-goal {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        /* Progress Bar */
-        .progress-wrapper {
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: rgba(255,255,255,0.8);
-            border-radius: 4px;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Main Content */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Meal Input Section */
-        .input-section {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-        }
-
-        .meal-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px;
-        }
-
-        .meal-tabs::-webkit-scrollbar {
-            height: 3px;
-        }
-
-        .meal-tabs::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
-        }
-
-        .meal-tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: var(--lighter);
-            border: 1px solid var(--border);
-            color: var(--text-light);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-
-        .meal-tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        #foodInput {
-            flex: 1;
-            background: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 14px;
-            color: var(--text);
-            font-size: 15px;
-            transition: all 0.2s ease;
-        }
-
-        #foodInput:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        #foodInput::placeholder {
-            color: var(--text-light);
-        }
-
-        .btn-voice {
-            width: 44px;
-            height: 44px;
-            padding: 0;
-            background: var(--lighter);
-            border: 1px solid var(--border);
-            color: var(--primary);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .btn-voice:active {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: var(--primary);
-        }
-
-        .btn-voice.recording {
-            background: rgba(245, 101, 101, 0.1);
-            border-color: var(--danger);
-            color: var(--danger);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .btn {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* History Section */
-        .history-section {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 32px 16px;
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .history-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .history-list::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 12px;
-            background: var(--light);
-            border-radius: 10px;
-            border-left: 4px solid var(--primary);
-            animation: slideIn 0.3s ease;
-            gap: 10px;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .history-item-left {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .history-item-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .meal-badge {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 8px;
-            background: rgba(102, 126, 234, 0.1);
-            color: var(--primary);
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .history-item-food {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 14px;
-            word-break: break-word;
-        }
-
-        .history-item-meta {
-            display: flex;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 6px;
-            flex-wrap: wrap;
-        }
-
-        .macro-tag {
-            display: inline-block;
-            padding: 2px 6px;
-            background: var(--lighter);
-            border-radius: 4px;
-            font-size: 11px;
-        }
-
-        .macro-tag.protein { background: rgba(76, 140, 227, 0.1); color: #4c8ce3; }
-        .macro-tag.carbs { background: rgba(237, 137, 54, 0.1); color: #ed8936; }
-        .macro-tag.fat { background: rgba(240, 180, 41, 0.1); color: #f0b429; }
-
-        .history-item-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .history-item-kcal {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 16px;
-        }
-
-        .history-item-delete {
-            background: rgba(245, 101, 101, 0.1);
-            border: none;
-            color: var(--danger);
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .history-item-delete:active {
-            background: rgba(245, 101, 101, 0.2);
-            transform: scale(0.95);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 24px 24px 0 0;
-            padding: 24px;
-            width: 100%;
-            max-width: 600px;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 16px;
-        }
-
-        .modal-header h2 { font-size: 20px; font-weight: 700; }
-
-        .modal-close {
-            background: none; border: none; color: var(--text-light); font-size: 24px;
-            cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center;
-            justify-content: center; transition: all 0.2s ease; border-radius: 8px;
-        }
-
-        .modal-close:active { background: var(--lighter); color: var(--text); }
-
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;
-            color: var(--text); text-transform: uppercase; letter-spacing: 0.3px;
-        }
-        .form-group input {
-            width: 100%; padding: 11px 14px; background: var(--light); border: 1px solid var(--border);
-            border-radius: 10px; color: var(--text); font-size: 15px; transition: all 0.2s ease;
-        }
-        .form-group input:focus {
-            outline: none; border-color: var(--primary); background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .modal-footer {
-            display: flex; gap: 12px; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;
-        }
-
-        .btn-secondary { background: var(--lighter); border: 1px solid var(--border); color: var(--text); flex: 1; }
-        .btn-secondary:active { background: var(--border); }
-
-        /* Toast */
-        .toast {
-            position: fixed; bottom: 20px; left: 16px; right: 16px; max-width: 500px;
-            margin: 0 auto; left: 50%; transform: translateX(-50%); background: white;
-            border: 1px solid var(--border); color: var(--text); padding: 14px 16px;
-            border-radius: 10px; font-size: 14px; box-shadow: var(--shadow);
-            animation: toastSlide 0.3s ease; z-index: 2000;
-        }
-        .toast.success { background: rgba(72, 187, 120, 0.1); border-color: rgba(72, 187, 120, 0.3); color: #22543d; }
-        .toast.error { background: rgba(245, 101, 101, 0.1); border-color: rgba(245, 101, 101, 0.3); color: var(--danger); }
-
-        @keyframes toastSlide {
-            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-
-        /* Loading */
-        .loading { display: inline-flex; gap: 4px; align-items: center; }
-        .loading span { width: 4px; height: 4px; background: white; border-radius: 50%; animation: loading 1.4s infinite; }
-        .loading span:nth-child(2) { animation-delay: 0.2s; }
-        .loading span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes loading { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container { padding: 12px; }
-            h1 { font-size: 24px; }
-            .header-card { padding: 18px; }
-            .kcal-value { font-size: 40px; }
-            .macros-grid { gap: 10px; }
-            .macro-box { padding: 10px; }
-            .macro-value { font-size: 16px; }
-            .modal-content { border-radius: 20px 20px 0 0; padding: 18px; }
-        }
-
-        /* Confirmation Dialog */
-        .confirm-dialog {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 1100;
-            align-items: center; justify-content: center;
-        }
-        .confirm-dialog.active { display: flex; }
-        .confirm-content {
-            background: white; border-radius: 16px; padding: 24px; max-width: 350px;
-            width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: scaleIn 0.3s ease;
-        }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .confirm-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-        .confirm-content p { font-size: 14px; color: var(--text-light); margin-bottom: 20px; line-height: 1.5; }
-        .confirm-actions { display: flex; gap: 10px; }
-        .confirm-actions button { flex: 1; padding: 10px 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
-        .confirm-cancel { background: var(--lighter); color: var(--text); border: 1px solid var(--border); }
-        .confirm-confirm { background: var(--danger); color: white; }
-    </style>
+    <title>Nutrition App (Debug Mode)</title>
 </head>
 <body>
-    <div class="container">
-        <div class="header-card">
-            <div class="header-top">
-                <div>
-                    <h1>🔥 Kalorie Tracker</h1>
-                    <div class="header-date" id="headerDate"></div>
-                </div>
-                <div class="settings-reset-group">
-                    <button class="icon-btn" id="settingsBtn" title="Einstellungen">⚙️</button>
-                    <button class="icon-btn" id="resetBtn" title="Heute zurücksetzen">↻</button>
-                </div>
-            </div>
 
-            <div class="progress-wrapper">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                </div>
-            </div>
+    <h1>Nutrition App (Mobile Debug)</h1>
 
-            <div class="kcal-large">
-                <span class="kcal-value" id="totalKcal">0</span>
-                <span class="kcal-of">/ <span class="kcal-goal" id="kcalGoal">2000</span></span>
-            </div>
+    <section>
+        <h3>1. API Einstellungen</h3>
+        <input type="password" id="apiKeyInput" placeholder="Groq API Key hier einfügen">
+        <button onclick="saveApiKey()">Key speichern</button>
+    </section>
 
-            <div class="macros-grid">
-                <div class="macro-box">
-                    <span class="macro-value" id="proteinValue">0g</span>
-                    <span class="macro-label">Protein</span>
-                </div>
-                <div class="macro-box">
-                    <span class="macro-value" id="carbsValue">0g</span>
-                    <span class="macro-label">Kohlenhydrate</span>
-                </div>
-                <div class="macro-box">
-                    <span class="macro-value" id="fatValue">0g</span>
-                    <span class="macro-label">Fett</span>
-                </div>
-            </div>
-        </div>
+    <hr>
 
-        <main>
-            <div class="input-section">
-                <div class="meal-tabs">
-                    <button class="meal-tab active" data-meal="Frühstück">🌅 Frühstück</button>
-                    <button class="meal-tab" data-meal="Mittagessen">🍽️ Mittagessen</button>
-                    <button class="meal-tab" data-meal="Snack">🍿 Snack</button>
-                    <button class="meal-tab" data-meal="Dinner">🌙 Dinner</button>
-                    <button class="meal-tab" data-meal="Sonstiges">📝 Sonstiges</button>
-                </div>
+    <section>
+        <h3>2. Tagesübersicht</h3>
+        <p>Tagesziel: 2000 kcal (Standard)</p>
+        <p>Konsumiert: <strong id="totalKcal">0</strong> kcal</p>
+        <p>Verbleibend: <strong id="remainingKcal">2000</strong> kcal</p>
+        <p>Eiweiß: <strong id="totalProtein">0</strong>g | Kohlenhydrate: <strong id="totalCarbs">0</strong>g | Fett: <strong id="totalFett">0</strong>g</p>
+        <button onclick="clearDataManually()">Heute manuell zurücksetzen</button>
+    </section>
 
-                <div class="input-group">
-                    <input 
-                        type="text" 
-                        id="foodInput" 
-                        placeholder="z.B. '200g Vollkornbrot und 2 Eier'" 
-                        autocomplete="off"
-                    >
-                    <button class="btn-voice" id="voiceBtn" title="Spracheingabe">🎤</button>
-                </div>
-                <button class="btn btn-primary" id="submitBtn">+ Hinzufügen</button>
-            </div>
+    <hr>
 
-            <div class="history-section">
-                <div class="section-header">
-                    <span class="section-title">📋 Mahlzeiten heute</span>
-                </div>
-                <div id="historyContainer" class="history-empty">Noch nichts hinzugefügt</div>
-            </div>
-        </main>
-    </div>
+    <section>
+        <h3>3. Mahlzeit eingeben</h3>
+        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Liter Eiweiß mit 2 Vollkorntoastbrot von Ja!"></textarea>
+        <br><br>
+        <button id="submitBtn" onclick="analyzeMeal()">Mahlzeit analysieren</button>
+        <p id="loadingText" style="display:none; color: blue;">KI analysiert gerade... Bitte warten...</p>
+    </section>
 
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>⚙️ Einstellungen</h2>
-                <button class="modal-close" id="closeSettingsBtn">✕</button>
-            </div>
-            <div class="form-group">
-                <label for="hfKeyInput">Hugging Face API Token (hf_...)</label>
-                <input type="password" id="hfKeyInput" placeholder="hf_...">
-            </div>
-            <div class="form-group">
-                <label for="kcalGoalInput">Tages-kcal-Ziel</label>
-                <input type="number" id="kcalGoalInput" placeholder="2000" min="500" max="10000">
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelSettingsBtn">Abbrechen</button>
-                <button class="btn btn-primary" id="saveSettingsBtn">Speichern</button>
-            </div>
-        </div>
-    </div>
+    <hr>
 
-    <div class="confirm-dialog" id="confirmDialog">
-        <div class="confirm-content">
-            <h3 id="confirmTitle">Bestätigung</h3>
-            <p id="confirmMessage">Sind Sie sicher?</p>
-            <div class="confirm-actions">
-                <button class="confirm-cancel" id="confirmCancel">Nein</button>
-                <button class="confirm-confirm" id="confirmConfirm">Ja, zurücksetzen</button>
-            </div>
-        </div>
-    </div>
+    <section>
+        <h3>4. Heutige Zutaten & Mahlzeiten</h3>
+        <ul id="logList">
+            </ul>
+    </section>
 
     <script>
-        // ==================== STATE MANAGEMENT ====================
-        const AppState = {
-            apiKey: localStorage.getItem('hfApiKey') || '', // Nutzt jetzt den hfApiKey Speicherort
-            kcalGoal: parseInt(localStorage.getItem('kcalGoal')) || 2000,
-            history: JSON.parse(localStorage.getItem('kcalHistory')) || [],
-            currentDate: new Date().toDateString(),
-            currentMeal: 'Frühstück',
+        // Standard-Tagesziel
+        const DAILY_GOAL = 2000;
 
-            init() {
-                const storedDate = localStorage.getItem('kcalDate');
-                if (storedDate !== this.currentDate) {
-                    this.history = [];
-                    localStorage.setItem('kcalDate', this.currentDate);
-                    localStorage.setItem('kcalHistory', JSON.stringify(this.history));
-                }
-            },
-
-            addEntry(food, kcal, protein, carbs, fat, meal) {
-                this.history.push({
-                    food,
-                    kcal,
-                    protein: Math.round(protein * 10) / 10,
-                    carbs: Math.round(carbs * 10) / 10,
-                    fat: Math.round(fat * 10) / 10,
-                    meal,
-                    time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-                });
-                localStorage.setItem('kcalHistory', JSON.stringify(this.history));
-            },
-
-            removeEntry(index) {
-                this.history.splice(index, 1);
-                localStorage.setItem('kcalHistory', JSON.stringify(this.history));
-            },
-
-            resetToday() {
-                this.history = [];
-                localStorage.setItem('kcalHistory', JSON.stringify(this.history));
-            },
-
-            getTotalKcal() { return this.history.reduce((sum, entry) => sum + entry.kcal, 0); },
-            getTotalProtein() { return this.history.reduce((sum, entry) => sum + entry.protein, 0); },
-            getTotalCarbs() { return this.history.reduce((sum, entry) => sum + entry.carbs, 0); },
-            getTotalFat() { return this.history.reduce((sum, entry) => sum + entry.fat, 0); },
-
-            saveSettings(key, goal) {
-                this.apiKey = key;
-                this.kcalGoal = goal;
-                localStorage.setItem('hfApiKey', key);
-                localStorage.setItem('kcalGoal', goal);
-            }
+        // Beim Laden der App: Daten wiederherstellen & Datum prüfen
+        window.onload = function() {
+            checkDailyReset();
+            loadApiKey();
+            updateUI();
         };
 
-        // ==================== UI UPDATES ====================
-        function updateProgressBar() {
-            const total = AppState.getTotalKcal();
-            const percentage = Math.min((total / AppState.kcalGoal) * 100, 100);
-
-            document.getElementById('progressFill').style.width = `${percentage}%`;
-            document.getElementById('totalKcal').textContent = total;
-            document.getElementById('kcalGoal').textContent = AppState.kcalGoal;
-            document.getElementById('proteinValue').textContent = Math.round(AppState.getTotalProtein() * 10) / 10 + 'g';
-            document.getElementById('carbsValue').textContent = Math.round(AppState.getTotalCarbs() * 10) / 10 + 'g';
-            document.getElementById('fatValue').textContent = Math.round(AppState.getTotalFat() * 10) / 10 + 'g';
+        // 1. API Key im LocalStorage speichern
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value;
+            localStorage.setItem('groq_api_key', key);
+            alert('API Key gespeichert!');
         }
 
-        function updateHistory() {
-            const container = document.getElementById('historyContainer');
+        function loadApiKey() {
+            const key = localStorage.getItem('groq_api_key');
+            if(key) {
+                document.getElementById('apiKeyInput').value = key;
+            }
+        }
 
-            if (AppState.history.length === 0) {
-                container.innerHTML = '<div class="history-empty">Noch nichts hinzugefügt. Starten Sie mit einem Lebensmittel!</div>';
+        // 2. Automatischer Reset jeden Tag
+        function checkDailyReset() {
+            const todayStr = new Date().toDateString(); // Z.B. "Sun Jun 14 2026"
+            const lastSavedDate = localStorage.getItem('last_saved_date');
+
+            if (lastSavedDate !== todayStr) {
+                // Neuer Tag! Altes Log löschen
+                localStorage.setItem('meal_log', JSON.stringify([]));
+                localStorage.setItem('last_saved_date', todayStr);
+            }
+        }
+
+        function clearDataManually() {
+            if(confirm("Wirklich alle heutigen Daten löschen?")) {
+                localStorage.setItem('meal_log', JSON.stringify([]));
+                updateUI();
+            }
+        }
+
+        // 3. UI Aktualisieren (Rechnen und Anzeigen)
+        function updateUI() {
+            const log = JSON.parse(localStorage.getItem('meal_log')) || [];
+            let totalKcal = 0, totalProtein = 0, totalCarbs = 0, totalFett = 0;
+
+            const logList = document.getElementById('logList');
+            logList.innerHTML = ''; // Liste leeren
+
+            log.forEach(item => {
+                totalKcal += item.kcal;
+                totalProtein += item.protein;
+                totalCarbs += item.carbs;
+                totalFett += item.fett;
+
+                // Eintrag zur Liste hinzufügen
+                const li = document.createElement('li');
+                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${item.kcal} kcal (E:${item.protein}g, K:${item.carbs}g, F:${item.fett}g)`;
+                logList.appendChild(li);
+            });
+
+            // Werte in die Übersicht schreiben
+            document.getElementById('totalKcal').innerText = totalKcal;
+            document.getElementById('remainingKcal').innerText = DAILY_GOAL - totalKcal;
+            document.getElementById('totalProtein').innerText = totalProtein;
+            document.getElementById('totalCarbs').innerText = totalCarbs;
+            document.getElementById('totalFett').innerText = totalFett;
+        }
+
+        // 4. KI ANALYSE VIA GROQ API
+        async function analyzeMeal() {
+            const apiKey = localStorage.getItem('groq_api_key');
+            if(!apiKey) {
+                alert("Bitte gib zuerst einen Groq API Key ein!");
                 return;
             }
 
-            container.innerHTML = `
-                <div class="history-list">
-                    ${AppState.history.map((entry, index) => `
-                        <div class="history-item">
-                            <div class="history-item-left">
-                                <div class="history-item-header">
-                                    <span class="meal-badge">${entry.meal}</span>
-                                </div>
-                                <div class="history-item-food">${escapeHtml(entry.food)}</div>
-                                <div class="history-item-meta">
-                                    <span class="macro-tag protein">P: ${entry.protein}g</span>
-                                    <span class="macro-tag carbs">KH: ${entry.carbs}g</span>
-                                    <span class="macro-tag fat">F: ${entry.fat}g</span>
-                                    <span>${entry.time}</span>
-                                </div>
-                            </div>
-                            <div class="history-item-right">
-                                <div class="history-item-kcal">${entry.kcal} kcal</div>
-                                <button class="history-item-delete" onclick="handleDeleteEntry(${index})" title="Löschen">🗑️</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
+            const mealText = document.getElementById('mealInput').value;
+            if(!mealText.trim()) return;
 
-        function updateHeaderDate() {
+            // Lade-Indikator anzeigen
+            document.getElementById('loadingText').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+
+            // Uhrzeit festhalten
             const now = new Date();
-            const options = { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' };
-            const dateStr = now.toLocaleDateString('de-DE', options).replace(/\./g, '.');
-            document.getElementById('headerDate').textContent = dateStr;
-        }
+            const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-        // ==================== HUGGING FACE API (100% FREE) ====================
-        async function analyzeFoodWithHuggingFace(foodDescription) {
-            if (!AppState.apiKey) {
-                showToast('Bitte Hugging Face API Token (hf_...) in den Einstellungen setzen', 'error');
-                return null;
-            }
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
-            submitBtn.disabled = true;
+            // System Prompt: Zwingt die KI, nur valides JSON zurückzugeben und deutsche Marken zu beachten
+            const systemPrompt = `Du bist ein präziser Ernährungsberater für den deutschen Markt. 
+            Analysiere den Text des Nutzers. Erkenne die Zutaten und schätze die Nährwerte (Kcal, Eiweiß, Kohlenhydrate, Fett) basierend auf typischen Werten deutscher Supermärkte (z.B. Ja!, Gut&Günstig, Milbona, Eigenmarken), falls angegeben.
+            Antworte AUSSCHLIESSLICH mit einem validen JSON-Array. Keine Einleitung, kein Text drumherum.
+            Format-Beispiel:
+            [
+              {"name": "1L Eiweiß (Milbona)", "kcal": 500, "protein": 110, "carbs": 10, "fett": 2},
+              {"name": "2 Vollkorntoastbrot (Ja!)", "kcal": 140, "protein": 5, "carbs": 26, "fett": 2}
+            ]`;
 
             try {
-                const prompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-Du bist ein hochpräziser Ernährungsberater und eine professionelle Lebensmitteldatenbank. 
-Analysiere die Eingabe des Nutzers und teile sie in einzelne Lebensmittel auf, falls mehrere genannt werden. 
-
-Regeln für die Nährwertberechnung:
-1. Nutze strikt die exakten Nährwerte von bekannten deutschen Supermarkt-Eigenmarken (z.B. "Ja!", "Gut & Günstig", "Milbona", "K-Classic").
-2. Berechne die Makros und Kalorien mathematisch exakt auf die angegebene Menge (z.B. 200g oder Stückzahl) herunter.
-3. Nenne die angenommene Marke zwingend in der Beschreibung.
-
-Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt, das einen Schlüssel "items" besitzt. "items" enthält ein Array aus Objekten.
-Verwende KEIN Markdown (keine \`\`\`json Blöcke), keine Einleitung und keine Erklärungen! Nur das rohe JSON!
-
-Strukturbeispiel:
-{"items": [{"food": "200g Vollkornbrot (Gut & Günstig)", "kcal": 420, "protein": 12.4, "carbs": 68.0, "fat": 2.2}]}
-
-<|eot_id|><|start_header_id|>user<|end_header_id|>
-Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
-
-                const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct', {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${AppState.apiKey}`,
+                        'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        inputs: prompt,
-                        parameters: {
-                            temperature: 0.1,
-                            max_new_tokens: 500,
-                            return_full_text: false
-                        }
+                        model: "llama-3.1-70b-versatile", // Ein extrem starkes und schlaues Modell
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: mealText }
+                        ],
+                        temperature: 0.1 // Niedrige Temperatur für faktenbasierte Daten
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error('Fehler bei der Hugging Face API. Ist dein hf_ Token korrekt?');
-                }
-
                 const data = await response.json();
                 
-                let generatedText = data[0]?.generated_text || data.generated_text;
-                if (!generatedText) throw new Error('Keine Antwort von der KI erhalten.');
-
-                // Bereinigen falls Markdown ausgegeben wurde
-                generatedText = generatedText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-                const content = JSON.parse(generatedText);
-                const itemsArray = content.items || [];
-
-                if (itemsArray.length === 0) {
-                    throw new Error('Konnte keine Lebensmittel erkennen.');
-                }
-
-                const validItems = itemsArray.filter(item => typeof item.kcal === 'number');
+                // Antwort-Text von der KI holen
+                let aiResponseText = data.choices[0].message.content.trim();
                 
-                if (validItems.length === 0) {
-                    throw new Error('Nährwerte konnten nicht richtig berechnet werden.');
-                }
+                // Falls die KI wider Erwarten Markdown-Codeblöcke verwendet (```json ... ```), diese entfernen
+                aiResponseText = aiResponseText.replace(/```json|```/g, '');
 
-                return validItems;
+                // JSON parsen
+                const parsedItems = JSON.parse(aiResponseText);
+
+                // Bestehendes Log aus LocalStorage laden
+                let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
+
+                // Jedes von der KI erkannte Item mit der aktuellen Uhrzeit versehen und abspeichern
+                parsedItems.forEach(item => {
+                    item.time = currentTimeStr;
+                    currentLog.push(item);
+                });
+
+                // Im LocalStorage speichern und UI updaten
+                localStorage.setItem('meal_log', JSON.stringify(currentLog));
+                updateUI();
+                
+                // Textfeld leeren
+                document.getElementById('mealInput').value = '';
 
             } catch (error) {
-                console.error('Hugging Face API Error:', error);
-                showToast(`Fehler: ${error.message}`, 'error');
-                return null;
+                console.error("Fehler bei der API oder beim Parsen:", error);
+                alert("Fehler bei der Analyse. Schau in die Konsole (F12).");
             } finally {
-                submitBtn.innerHTML = '+ Hinzufügen';
-                submitBtn.disabled = false;
+                // Lade-Indikator ausblenden
+                document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
             }
         }
-
-        // ==================== WEB SPEECH API ====================
-        let recognition;
-        const voiceBtn = document.getElementById('voiceBtn');
-
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = 'de-DE';
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onstart = () => {
-                voiceBtn.classList.add('recording');
-                voiceBtn.innerHTML = '🎙️';
-            };
-
-            recognition.onend = () => {
-                voiceBtn.classList.remove('recording');
-                voiceBtn.innerHTML = '🎤';
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = Array.from(event.results).map(result => result[0].transcript).join('');
-                document.getElementById('foodInput').value = transcript;
-            };
-
-            recognition.onerror = (event) => {
-                showToast(`Spracherkennung Fehler: ${event.error}`, 'error');
-            };
-
-            voiceBtn.addEventListener('click', () => {
-                if (voiceBtn.classList.contains('recording')) {
-                    recognition.abort();
-                } else {
-                    document.getElementById('foodInput').value = '';
-                    recognition.start();
-                }
-            });
-        } else {
-            voiceBtn.style.display = 'none';
-        }
-
-        // ==================== EVENT HANDLERS ====================
-        async function handleSubmit() {
-            const input = document.getElementById('foodInput').value.trim();
-            if (!input) {
-                showToast('Bitte Lebensmittel eingeben', 'error');
-                return;
-            }
-
-            // Ruft jetzt zuverlässig Hugging Face auf
-            const results = await analyzeFoodWithHuggingFace(input);
-            
-            if (results && results.length > 0) {
-                results.forEach(result => {
-                    AppState.addEntry(
-                        result.food || input, 
-                        Math.round(result.kcal), 
-                        result.protein || 0, 
-                        result.carbs || 0, 
-                        result.fat || 0, 
-                        AppState.currentMeal
-                    );
-                });
-                
-                updateHistory();
-                updateProgressBar();
-                document.getElementById('foodInput').value = '';
-                
-                if(results.length > 1) {
-                    showToast(`✅ ${results.length} Lebensmittel erfolgreich hinzugefügt`);
-                } else {
-                    showToast(`✅ ${results[0].food} (${Math.round(results[0].kcal)} kcal) hinzugefügt`);
-                }
-            }
-        }
-
-        function handleDeleteEntry(index) {
-            AppState.removeEntry(index);
-            updateHistory();
-            updateProgressBar();
-            showToast('Eintrag gelöscht');
-        }
-
-        function handleReset() {
-            showConfirmDialog(
-                'Heute zurücksetzen?',
-                'Alle Einträge von heute werden gelöscht. Dies kann nicht rückgängig gemacht werden.',
-                () => {
-                    AppState.resetToday();
-                    updateHistory();
-                    updateProgressBar();
-                    showToast('✅ Alle Einträge gelöscht');
-                }
-            );
-        }
-
-        // Event Listeners
-        document.getElementById('submitBtn').addEventListener('click', handleSubmit);
-        document.getElementById('foodInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSubmit();
-        });
-
-        document.getElementById('resetBtn').addEventListener('click', handleReset);
-
-        // Meal Tab Selection
-        document.querySelectorAll('.meal-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.meal-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                AppState.currentMeal = tab.dataset.meal;
-            });
-        });
-
-        // ==================== SETTINGS MODAL ====================
-        const settingsModal = document.getElementById('settingsModal');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
-        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        const hfKeyInput = document.getElementById('hfKeyInput');
-        const kcalGoalInput = document.getElementById('kcalGoalInput');
-
-        settingsBtn.addEventListener('click', () => {
-            hfKeyInput.value = AppState.apiKey;
-            kcalGoalInput.value = AppState.kcalGoal;
-            settingsModal.classList.add('active');
-        });
-
-        const closeModal = () => settingsModal.classList.remove('active');
-        closeSettingsBtn.addEventListener('click', closeModal);
-        cancelSettingsBtn.addEventListener('click', closeModal);
-
-        saveSettingsBtn.addEventListener('click', () => {
-            const key = hfKeyInput.value.trim();
-            const goal = parseInt(kcalGoalInput.value) || 2000;
-
-            if (!key) {
-                showToast('Bitte Hugging Face Token eingeben', 'error');
-                return;
-            }
-
-            if (goal < 500 || goal > 10000) {
-                showToast('Ziel muss zwischen 500 und 10000 kcal liegen', 'error');
-                return;
-            }
-
-            AppState.saveSettings(key, goal);
-            updateProgressBar();
-            closeModal();
-            showToast('✅ Einstellungen gespeichert');
-        });
-
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) closeModal();
-        });
-
-        // ==================== TOAST NOTIFICATIONS ====================
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => { toast.remove(); }, 3500);
-        }
-
-        // ==================== CONFIRM DIALOG ====================
-        function showConfirmDialog(title, message, onConfirm) {
-            const dialog = document.getElementById('confirmDialog');
-            document.getElementById('confirmTitle').textContent = title;
-            document.getElementById('confirmMessage').textContent = message;
-            
-            dialog.classList.add('active');
-
-            const confirmBtn = document.getElementById('confirmConfirm');
-            const cancelBtn = document.getElementById('confirmCancel');
-
-            const cleanup = () => {
-                dialog.classList.remove('active');
-                confirmBtn.removeEventListener('click', onConfirmClick);
-                cancelBtn.removeEventListener('click', onCancelClick);
-            };
-
-            const onConfirmClick = () => { onConfirm(); cleanup(); };
-            const onCancelClick = () => { cleanup(); };
-
-            confirmBtn.addEventListener('click', onConfirmClick);
-            cancelBtn.addEventListener('click', onCancelClick);
-        }
-
-        // ==================== UTILITIES ====================
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ==================== INITIALIZATION ====================
-        window.addEventListener('load', () => {
-            AppState.init();
-            updateHeaderDate();
-            updateProgressBar();
-            updateHistory();
-
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('data:text/javascript,').catch(() => {});
-            }
-
-            document.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 1) e.preventDefault();
-            }, { passive: false });
-        });
-
-        window.handleDeleteEntry = handleDeleteEntry;
     </script>
 </body>
 </html>
