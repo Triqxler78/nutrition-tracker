@@ -637,7 +637,7 @@
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
             if(!apiKey) {
-                showToast("Bitte hinterlege deinen GROQ API Key in den Einstellungen!", "error");
+                alert("Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen GROQ Cloud API Key!");
                 toggleSettings();
                 return;
             }
@@ -676,7 +676,7 @@ Gib ausschließlich ein JSON-Objekt im folgenden Format zurück:
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "llama-3.1-8b-instant", // Geupdatet auf ein stabiles Groq JSON-Modell
+                        model: "llama-3.1-8b-instant", // Geupdatet auf das aktuellste und schnellste Groq-Modell
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
@@ -687,7 +687,9 @@ Gib ausschließlich ein JSON-Objekt im folgenden Format zurück:
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Fehler Status: ${response.status}`);
+                    // Lese die genaue Fehlermeldung von Groq aus
+                    const errorText = await response.text();
+                    throw new Error(errorText);
                 }
 
                 const data = await response.json();
@@ -709,7 +711,19 @@ Gib ausschließlich ein JSON-Objekt im folgenden Format zurück:
 
             } catch (error) {
                 console.error("Fehler:", error);
-                showToast("Fehler bei der KI-Analyse. Prüfe deinen API Key.", "error");
+                
+                // Versuche, den Fehler lesbar zu machen
+                let userFriendlyError = error.message;
+                try {
+                    const parsedError = JSON.parse(error.message);
+                    if(parsedError.error && parsedError.error.message) {
+                        userFriendlyError = parsedError.error.message;
+                    }
+                } catch(e) {} // Falls es kein JSON war, behalten wir die Standard-Nachricht
+                
+                alert(`API Fehler:\n\n${userFriendlyError}\n\nTipp: Hast du deinen API-Key richtig in die Einstellungen eingetragen?`);
+                showToast("Scan fehlgeschlagen", "error");
+                
             } finally {
                 // Reset Loading State
                 btn.disabled = false;
