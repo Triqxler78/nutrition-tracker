@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition App (Debug v4)</title>
+    <title>Nutrition App (Debug v5)</title>
 </head>
 <body>
 
-    <h1>Nutrition App (Mobile Debug v4)</h1>
+    <h1>Nutrition App (Mobile Debug v5)</h1>
 
     <section>
         <h3>1. API Einstellungen</h3>
@@ -30,10 +30,10 @@
 
     <section>
         <h3>3. Mahlzeit eingeben</h3>
-        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Ei"></textarea>
+        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Ei oder 2 Vollkorntoast"></textarea>
         <br><br>
         <button id="submitBtn" onclick="analyzeMeal()">Mahlzeit analysieren</button>
-        <p id="loadingText" style="display:none; color: blue;">KI filtert streng... Bitte warten...</p>
+        <p id="loadingText" style="display:none; color: blue;">KI berechnet exakt... Bitte warten...</p>
     </section>
 
     <hr>
@@ -94,20 +94,21 @@
 
             log.forEach(item => {
                 totalKcal += Math.round(Number(item.kcal || 0));
-                totalProtein += Math.round(Number(item.protein || 0));
-                totalCarbs += Math.round(Number(item.carbs || 0));
-                totalFett += Math.round(Number(item.fett || 0));
+                totalProtein += Number(item.protein || 0);
+                totalCarbs += Number(item.carbs || 0);
+                totalFett += Number(item.fett || 0);
 
                 const li = document.createElement('li');
-                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${Math.round(item.kcal)} kcal (E:${Math.round(item.protein)}g, K:${Math.round(item.carbs)}g, F:${Math.round(item.fett)}g)`;
+                // Eine Nachkommastelle bei den Makros anzeigen für mehr Präzision
+                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${Math.round(item.kcal)} kcal (E:${item.protein.toFixed(1)}g, K:${item.carbs.toFixed(1)}g, F:${item.fett.toFixed(1)}g)`;
                 logList.appendChild(li);
             });
 
             document.getElementById('totalKcal').innerText = totalKcal;
             document.getElementById('remainingKcal').innerText = DAILY_GOAL - totalKcal;
-            document.getElementById('totalProtein').innerText = totalProtein;
-            document.getElementById('totalCarbs').innerText = totalCarbs;
-            document.getElementById('totalFett').innerText = totalFett;
+            document.getElementById('totalProtein').innerText = totalProtein.toFixed(1);
+            document.getElementById('totalCarbs').innerText = totalCarbs.toFixed(1);
+            document.getElementById('totalFett').innerText = totalFett.toFixed(1);
         }
 
         async function analyzeMeal() {
@@ -126,18 +127,20 @@
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            // HIER DIE RADIKALE ÄNDERUNG: Absolute Verbote für die KI
-            const systemPrompt = `Du bist ein präziser Ernährungsrechner. Deine Aufgabe ist es, NUR die vom Nutzer eingegebenen Lebensmittel zu analysieren.
+            // NEUER PROMPT: Zwingt REWE "ja!" und erzwingt korrekte Mathematik!
+            const systemPrompt = `Du bist ein hochpräziser Nährwertrechner.
             
             STRIKTE REGELN:
-            1. Analysiere AUSSCHLIESSLICH die Lebensmittel, die im Text des Nutzers stehen. Wenn der Nutzer nur "Ei" schreibt, darf deine Antwort NUR ein einziges Element für das Ei enthalten. Füge NIEMALS andere Lebensmittel hinzu, die nicht im Text stehen (kein Brot, kein Joghurt, nichts!).
-            2. Wenn der Nutzer keine Menge nennt, nimm eine realistische Standardportion für ein (1) Stück oder 100g an (z.B. 1 Ei = ca. 75-80 kcal, 13g Eiweiß pro 100g).
-            3. Schätze die Werte nach typischen deutschen Eigenmarken (Ja!, Gut&Günstig).
+            1. Analysiere NUR die eingegebenen Lebensmittel. Erfinde NICHTS dazu.
+            2. Wenn keine Marke genannt wird, nimm IMMER die Nährwerte der REWE Eigenmarke "ja!". Schreibe "(ja!)" hinter den Namen.
+            3. BEISPIEL-WERTE für 1 Ei (Größe M, ca. 55g): 76 kcal, Eiweiß: 6.5g, Kohlenhydrate: 0.5g, Fett: 5.5g.
+            4. WICHTIG - MATHEMATISCHE KORREKTHEIT: Deine Kalorien MÜSSEN zu den Makros passen! 
+               Formel: (Eiweiß * 4) + (Kohlenhydrate * 4) + (Fett * 9) = kcal.
             
             Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in diesem Format:
             {
               "items": [
-                {"name": "Name des Lebensmittels", "kcal": 75, "protein": 7, "carbs": 0.5, "fett": 5.5}
+                {"name": "1 Ei (ja!)", "kcal": 76, "protein": 6.5, "carbs": 0.5, "fett": 5.5}
               ]
             }`;
 
@@ -155,7 +158,7 @@
                             { role: "system", content: systemPrompt },
                             { role: "user", content: mealText }
                         ],
-                        temperature: 0.0 // Auf 0 gesetzt für maximale Striktheit ohne Kreativität
+                        temperature: 0.0 
                     })
                 });
 
