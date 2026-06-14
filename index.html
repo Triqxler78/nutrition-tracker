@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack Premium</title>
-    <!-- Moderne Schriftart importieren -->
+    <title>NutriTrack Premium (Grok Edition)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -126,15 +125,6 @@
             cursor: not-allowed;
             box-shadow: none;
         }
-        button.secondary {
-            background-color: #F3F4F6;
-            color: var(--text-main);
-            box-shadow: none;
-            margin-top: 10px;
-        }
-        button.secondary:hover {
-            background-color: #E5E7EB;
-        }
 
         /* Kalorien Fortschritt */
         .progress-wrapper {
@@ -239,7 +229,7 @@
 
         /* Settings Toggle */
         .settings-content {
-            display: none; /* Standardmäßig versteckt, um Platz zu sparen */
+            display: none;
             margin-top: 15px;
         }
         .toggle-btn {
@@ -257,17 +247,15 @@
         
         <div class="header">
             <h1>NutriTrack</h1>
-            <p>Dein smarter KI-Ernährungscoach</p>
+            <p>Dein smarter KI-Ernährungscoach (Grok Inside)</p>
         </div>
 
-        <!-- DASHBOARD CARD -->
         <div class="card">
             <div class="card-title">
                 Heutige Übersicht
                 <span class="toggle-btn" onclick="toggleSettings()">Einstellungen ⚙️</span>
             </div>
             
-            <!-- Einstellungen (Versteckt bis Klick) -->
             <div id="settingsArea" class="settings-content">
                 <div class="input-group">
                     <label style="font-size: 12px; color: var(--text-muted);">OpenRouter API Key</label>
@@ -307,7 +295,6 @@
             </div>
         </div>
 
-        <!-- TRACKING CARD -->
         <div class="card">
             <div class="card-title">Mahlzeit tracken</div>
             <textarea id="mealInput" rows="3" placeholder="Z.B.: 1 Apfel, 2 Vollkorntoast und 1 Ei..."></textarea>
@@ -315,21 +302,18 @@
             <button id="submitBtn" onclick="analyzeMeal()">Smart Scan ✨</button>
         </div>
 
-        <!-- LOG CARD -->
         <div class="card">
             <div class="card-title">
                 Verlauf
                 <span class="toggle-btn" style="color: var(--fat-color);" onclick="clearDataManually()">Zurücksetzen</span>
             </div>
             <ul id="logList">
-                <!-- Dynamischer Inhalt -->
-            </ul>
+                </ul>
         </div>
 
     </div>
 
     <script>
-        // Standard-Ziel, falls der User noch nichts eingestellt hat
         let DEFAULT_GOAL = 2000;
 
         window.onload = function() {
@@ -340,11 +324,7 @@
 
         function toggleSettings() {
             const area = document.getElementById('settingsArea');
-            if(area.style.display === 'block') {
-                area.style.display = 'none';
-            } else {
-                area.style.display = 'block';
-            }
+            area.style.display = area.style.display === 'block' ? 'none' : 'block';
         }
 
         function saveSettings() {
@@ -357,7 +337,7 @@
             DEFAULT_GOAL = goal ? parseInt(goal) : 2000;
             
             toggleSettings();
-            updateUI(); // UI direkt mit neuem Ziel aktualisieren
+            updateUI();
         }
 
         function loadSettings() {
@@ -400,7 +380,6 @@
                 totalCarbs += Number(item.carbs || 0);
                 totalFett += Number(item.fett || 0);
 
-                // Premium UI für die Liste generieren
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <div class="meal-header">
@@ -419,13 +398,11 @@
                 logList.appendChild(li);
             });
 
-            // Zahlen im Dashboard aktualisieren
             document.getElementById('totalKcalDisplay').innerText = totalKcal;
             document.getElementById('totalProtein').innerText = totalProtein.toFixed(1);
             document.getElementById('totalCarbs').innerText = totalCarbs.toFixed(1);
             document.getElementById('totalFett').innerText = totalFett.toFixed(1);
 
-            // Verbleibende Kcal und Balken berechnen
             let remaining = DEFAULT_GOAL - totalKcal;
             if (remaining < 0) remaining = 0;
             document.getElementById('remainingKcal').innerText = remaining;
@@ -436,7 +413,6 @@
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = percentage + '%';
             
-            // Wenn Ziel überschritten, wird der Balken rot
             if(totalKcal > DEFAULT_GOAL) {
                 progressBar.style.background = 'linear-gradient(90deg, #EF4444, #F87171)';
             } else {
@@ -456,7 +432,7 @@
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "KI analysiert... ⏳";
+            btn.innerText = "Grok analysiert... ⏳";
 
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -482,7 +458,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "google/gemini-2.5-flash",
+                        // HIER WIEDER GEÄNDERT: Grok-2 von x-ai via OpenRouter
+                        model: "x-ai/grok-2",
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
