@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition App (Debug v3)</title>
+    <title>Nutrition App (Debug v4)</title>
 </head>
 <body>
 
-    <h1>Nutrition App (Mobile Debug v3)</h1>
+    <h1>Nutrition App (Mobile Debug v4)</h1>
 
     <section>
         <h3>1. API Einstellungen</h3>
         <input type="password" id="apiKeyInput" placeholder="Groq API Key (gsk_...)">
-        <button onclick="saveApiKey()">Key保存</button>
+        <button onclick="saveApiKey()">Key speichern</button>
     </section>
 
     <hr>
@@ -30,10 +30,10 @@
 
     <section>
         <h3>3. Mahlzeit eingeben</h3>
-        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1L Öl und 1L Ei"></textarea>
+        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Ei"></textarea>
         <br><br>
         <button id="submitBtn" onclick="analyzeMeal()">Mahlzeit analysieren</button>
-        <p id="loadingText" style="display:none; color: blue;">KI rechnet präzise... Bitte warten...</p>
+        <p id="loadingText" style="display:none; color: blue;">KI filtert streng... Bitte warten...</p>
     </section>
 
     <hr>
@@ -126,15 +126,18 @@
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            // Messerscharfer System-Prompt für echtes Rechnen
-            const systemPrompt = `Du bist ein mathematisch präziser Ernährungsrechner für den deutschen Markt.
-            Analysiere die Eingabe des Nutzers. Berechne die exakten Nährwerte basierend auf der GENANNTEN Menge.
-            WICHTIG: Rechne das Volumen/Gewicht korrekt hoch! 1 Liter Öl wiegt ca. 900g und besteht zu 100% aus Fett (ca. 8000-9000 kcal!). 1 Liter Vollei entspricht ca. 20 großen Eiern (ca. 1400 kcal!). Sei extrem realistisch und nutze typische Werte deutscher Supermarkt-Eigenmarken (Ja!, Gut&Günstig, Milbona).
+            // HIER DIE RADIKALE ÄNDERUNG: Absolute Verbote für die KI
+            const systemPrompt = `Du bist ein präziser Ernährungsrechner. Deine Aufgabe ist es, NUR die vom Nutzer eingegebenen Lebensmittel zu analysieren.
             
-            Du MUSST im folgenden JSON-Format antworten (ein Objekt mit dem Key "items"):
+            STRIKTE REGELN:
+            1. Analysiere AUSSCHLIESSLICH die Lebensmittel, die im Text des Nutzers stehen. Wenn der Nutzer nur "Ei" schreibt, darf deine Antwort NUR ein einziges Element für das Ei enthalten. Füge NIEMALS andere Lebensmittel hinzu, die nicht im Text stehen (kein Brot, kein Joghurt, nichts!).
+            2. Wenn der Nutzer keine Menge nennt, nimm eine realistische Standardportion für ein (1) Stück oder 100g an (z.B. 1 Ei = ca. 75-80 kcal, 13g Eiweiß pro 100g).
+            3. Schätze die Werte nach typischen deutschen Eigenmarken (Ja!, Gut&Günstig).
+            
+            Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in diesem Format:
             {
               "items": [
-                {"name": "Exakter Name + Marke/Eigenmarke", "kcal": 8100, "protein": 0, "carbs": 0, "fett": 900}
+                {"name": "Name des Lebensmittels", "kcal": 75, "protein": 7, "carbs": 0.5, "fett": 5.5}
               ]
             }`;
 
@@ -146,13 +149,13 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile", // Das smarte 70B Modell
-                        response_format: { "type": "json_object" }, // Zwingt Groq zu sauberem JSON
+                        model: "llama-3.3-70b-versatile",
+                        response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: mealText }
                         ],
-                        temperature: 0.1
+                        temperature: 0.0 // Auf 0 gesetzt für maximale Striktheit ohne Kreativität
                     })
                 });
 
@@ -165,7 +168,6 @@
                 const data = await response.json();
                 const aiResponseText = data.choices[0].message.content.trim();
                 
-                // JSON parsen
                 const parsedData = JSON.parse(aiResponseText);
                 const parsedItems = parsedData.items || [];
 
