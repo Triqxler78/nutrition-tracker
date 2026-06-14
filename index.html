@@ -45,7 +45,6 @@
             gap: 20px;
         }
 
-        /* Header */
         .header {
             text-align: center;
             padding: 10px 0;
@@ -61,13 +60,11 @@
             font-size: 14px;
         }
 
-        /* Cards */
         .card {
             background-color: var(--card-bg);
             border-radius: 20px;
             padding: 24px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease;
         }
 
         .card-title {
@@ -80,7 +77,6 @@
             align-items: center;
         }
 
-        /* Inputs & Buttons */
         input, textarea {
             width: 100%;
             padding: 14px;
@@ -88,7 +84,6 @@
             border-radius: 12px;
             font-size: 15px;
             background-color: #F9FAFB;
-            transition: all 0.3s ease;
             outline: none;
             resize: none;
         }
@@ -115,33 +110,17 @@
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
         }
-        button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-        button:active {
-            transform: translateY(1px);
-        }
-        button:disabled {
-            background-color: #9CA3AF;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        button:disabled { background-color: #9CA3AF; cursor: not-allowed; box-shadow: none; }
 
-        /* Spezial-Button für Spracheingabe */
         button.voice-btn {
             background-color: var(--voice-color);
             box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
             margin-bottom: 10px;
         }
-        button.voice-btn:hover {
-            background-color: var(--voice-hover);
-        }
+        button.voice-btn:hover { background-color: var(--voice-hover); }
 
-        /* Kalorien Fortschritt */
-        .progress-wrapper {
-            margin: 20px 0;
-        }
+        .progress-wrapper { margin: 20px 0; }
         .progress-labels {
             display: flex;
             justify-content: space-between;
@@ -157,13 +136,11 @@
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #34D399);
             border-radius: 10px;
             width: 0%;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Makros Dashboard */
         .macros-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -177,25 +154,13 @@
             text-align: center;
             border: 1px solid #E5E7EB;
         }
-        .macro-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-        .macro-value {
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .macro-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+        .macro-value { font-size: 18px; font-weight: 700; }
         .m-protein { color: var(--protein-color); }
         .m-carbs { color: var(--carbs-color); }
         .m-fat { color: var(--fat-color); }
 
-        /* Listen Styling */
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+        ul { list-style: none; padding: 0; }
         li {
             background-color: #F9FAFB;
             border: 1px solid #E5E7EB;
@@ -206,51 +171,49 @@
             flex-direction: column;
             gap: 8px;
         }
-        .meal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .meal-time {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .meal-name {
-            font-weight: 600;
-            font-size: 15px;
-        }
-        .meal-kcal {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 15px;
-        }
-        .meal-macros {
-            display: flex;
-            gap: 10px;
-            font-size: 12px;
-        }
-        .badge {
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
+        .meal-header { display: flex; justify-content: space-between; align-items: center; }
+        .meal-time { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .meal-name { font-weight: 600; font-size: 15px; }
+        .meal-kcal { font-weight: 700; color: var(--primary); font-size: 15px; }
+        .meal-macros { display: flex; gap: 10px; font-size: 12px; flex-wrap: wrap; }
+        .badge { padding: 2px 8px; border-radius: 20px; font-weight: 600; }
         .bg-protein { background-color: rgba(59, 130, 246, 0.1); color: var(--protein-color); }
         .bg-carbs { background-color: rgba(245, 158, 11, 0.1); color: var(--carbs-color); }
         .bg-fat { background-color: rgba(239, 68, 68, 0.1); color: var(--fat-color); }
 
-        /* Settings Toggle */
-        .settings-content {
-            display: none;
-            margin-top: 15px;
-        }
-        .toggle-btn {
-            font-size: 12px;
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: underline;
-        }
+        .settings-content { display: none; margin-top: 15px; }
+        .toggle-btn { font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline; }
 
+        /* Edit Mode Styles */
+        .edit-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f0fdf4;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed var(--primary);
+        }
+        .edit-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .edit-grid input {
+            padding: 6px;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .edit-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .edit-actions button {
+            padding: 6px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -327,7 +290,7 @@
 
     <script>
         let DEFAULT_GOAL = 2000;
-        let speechRecognitionInstance = null; // Speichert die Sprachaufnahme-Instanz
+        let speechRecognitionInstance = null;
 
         window.onload = function() {
             checkDailyReset();
@@ -335,37 +298,41 @@
             updateUI();
         };
 
-        // --- NEU: INTEGRIERTE SPRACHEINGABE FUNKTION ---
+        // --- SPRACHEINGABE FIX FÜR IPHONE / SAFARI ---
         function startVoiceInput() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
             if (!SpeechRecognition) {
-                alert("Spracherkennung wird von deinem Browser oder Gerät leider nicht unterstützt. Nutze am besten Chrome oder Safari.");
+                alert("Spracherkennung wird von deinem Browser nicht unterstützt. Bitte nutze Safari oder Chrome auf dem iPhone.");
+                return;
+            }
+
+            // Sicherheits-Check für iOS: HTTPS erzwingen
+            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+                alert("WICHTIG FÜR IPHONE:\nDas Mikrofon ist aus Datenschutzgründen nur erlaubt, wenn die Seite über eine sichere Verbindung (HTTPS) läuft!\n\nBitte lade den Code auf GitHub Pages hoch und öffne die HTTPS-Adresse.");
                 return;
             }
 
             const micBtn = document.getElementById('micBtn');
             const mealInput = document.getElementById('mealInput');
 
-            // Wenn es bereits läuft, stoppen wir es per manuellem Klick
             if (speechRecognitionInstance) {
                 speechRecognitionInstance.stop();
                 return;
             }
 
             speechRecognitionInstance = new SpeechRecognition();
-            speechRecognitionInstance.lang = 'de-DE'; // Sprache auf Deutsch setzen
+            speechRecognitionInstance.lang = 'de-DE';
             speechRecognitionInstance.interimResults = false;
             speechRecognitionInstance.maxAlternatives = 1;
 
             speechRecognitionInstance.onstart = function() {
                 micBtn.innerText = "🛑 Stoppen & Text einfügen...";
-                micBtn.style.backgroundColor = "#EF4444"; // Signalrot während der Aufnahme
+                micBtn.style.backgroundColor = "#EF4444";
             };
 
             speechRecognitionInstance.onresult = function(event) {
                 const spokenText = event.results[0][0].transcript;
-                // Text an das bestehende Textfeld anhängen
                 if (mealInput.value.trim() !== "") {
                     mealInput.value += " " + spokenText;
                 } else {
@@ -375,64 +342,64 @@
 
             speechRecognitionInstance.onerror = function(event) {
                 console.error("Sprachfehler:", event.error);
-                if(event.error !== 'no-speech') {
-                    alert("Mikrofon-Fehler: " + event.error);
+                if (event.error === 'not-allowed') {
+                    alert("Mikrofon-Zugriff verweigert! Bitte gehe in die iPhone-Einstellungen -> Safari -> Mikrofon und erlaube den Zugriff für diese Webseite.");
+                } else if(event.error !== 'no-speech') {
+                    alert("Fehler bei Spracheingabe: " + event.error);
                 }
             };
 
             speechRecognitionInstance.onend = function() {
                 micBtn.innerText = "🎙️ Per Sprache eingeben";
                 micBtn.style.backgroundColor = "var(--voice-color)";
-                speechRecognitionInstance = null; // Instanz zurücksetzen
+                speechRecognitionInstance = null;
             };
 
             speechRecognitionInstance.start();
         }
 
-        function toggleSettings() {
-            const area = document.getElementById('settingsArea');
-            area.style.display = area.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function saveSettings() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            const goal = document.getElementById('goalInput').value.trim();
-
-            if(key) localStorage.setItem('groq_api_key', key);
-            if(goal) localStorage.setItem('daily_kcal_goal', goal);
-            
-            DEFAULT_GOAL = goal ? parseInt(goal) : 2000;
-            
-            toggleSettings();
+        // --- BEARBEITEN & KORREKTUR-SPEICHER LOGIK ---
+        function toggleEdit(index) {
+            const log = JSON.parse(localStorage.getItem('meal_log')) || [];
+            log[index].isEditing = !log[index].isEditing;
+            localStorage.setItem('meal_log', JSON.stringify(log));
             updateUI();
         }
 
-        function loadSettings() {
-            const key = localStorage.getItem('groq_api_key');
-            const goal = localStorage.getItem('daily_kcal_goal');
+        function saveEdit(index) {
+            const log = JSON.parse(localStorage.getItem('meal_log')) || [];
+            const item = log[index];
 
-            if(key) document.getElementById('apiKeyInput').value = key;
-            if(goal) {
-                document.getElementById('goalInput').value = goal;
-                DEFAULT_GOAL = parseInt(goal);
-            }
-        }
+            // Neue Werte aus den Inputs auslesen
+            const newKcal = Math.round(Number(document.getElementById(`editKcal-${index}`).value));
+            const newProtein = Number(document.getElementById(`editProtein-${index}`).value);
+            const newCarbs = Number(document.getElementById(`editCarbs-${index}`).value);
+            const newFat = Number(document.getElementById(`editFat-${index}`).value);
 
-        function checkDailyReset() {
-            const todayStr = new Date().toDateString();
-            const lastSavedDate = localStorage.getItem('last_saved_date');
+            // 1. Im heutigen Verlauf updaten
+            item.originalName = item.originalName || item.name; // Falls noch nicht gesetzt, alten Namen merken
+            item.kcal = newKcal;
+            item.protein = newProtein;
+            item.carbs = newCarbs;
+            item.fett = newFat;
+            item.isEditing = false;
 
-            if (lastSavedDate !== todayStr) {
-                localStorage.setItem('meal_log', JSON.stringify([]));
-                localStorage.setItem('last_saved_date', todayStr);
-            }
-        }
+            log[index] = item;
+            localStorage.setItem('meal_log', JSON.stringify(log));
 
-        function clearDataManually() {
-            if(confirm("Möchtest du die heutigen Einträge wirklich löschen?")) {
-                localStorage.setItem('meal_log', JSON.stringify([]));
-                updateUI();
-            }
+            // 2. Im Gedächtnis-Wörterbuch (Wissensdatenbank) für die Zukunft speichern
+            const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
+            const foodKey = item.name.toLowerCase().trim();
+            
+            dictionary[foodKey] = {
+                kcal: newKcal,
+                protein: newProtein,
+                carbs: newCarbs,
+                fett: newFat
+            };
+            localStorage.setItem('food_dictionary', JSON.stringify(dictionary));
+
+            updateUI();
         }
 
         function updateUI() {
@@ -441,27 +408,51 @@
             const logList = document.getElementById('logList');
             logList.innerHTML = ''; 
 
-            log.forEach(item => {
+            log.forEach((item, index) => {
                 totalKcal += Math.round(Number(item.kcal || 0));
                 totalProtein += Number(item.protein || 0);
                 totalCarbs += Number(item.carbs || 0);
                 totalFett += Number(item.fett || 0);
 
                 const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="meal-header">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span class="meal-time">${item.time}</span>
-                            <span class="meal-name">${item.name}</span>
+
+                if (item.isEditing) {
+                    // Bearbeitungs-Modus UI
+                    li.innerHTML = `
+                        <div class="edit-layout">
+                            <strong style="font-size:13px; color:var(--primary)">${item.name} anpassen:</strong>
+                            <div class="edit-grid">
+                                <div><label style="font-size:10px">kcal</label><input type="number" id="editKcal-${index}" value="${Math.round(item.kcal)}"></div>
+                                <div><label style="font-size:10px">Eiweiß</label><input type="number" step="0.1" id="editProtein-${index}" value="${item.protein}"></div>
+                                <div><label style="font-size:10px">Kohlenh.</label><input type="number" step="0.1" id="editCarbs-${index}" value="${item.carbs}"></div>
+                                <div><label style="font-size:10px">Fett</label><input type="number" step="0.1" id="editFat-${index}" value="${item.fett}"></div>
+                            </div>
+                            <div class="edit-actions">
+                                <button onclick="saveEdit(${index})" style="background-color: var(--primary);">Speichern & Merken 💾</button>
+                                <button onclick="toggleEdit(${index})" style="background-color: var(--text-muted);">Abbrechen</button>
+                            </div>
                         </div>
-                        <span class="meal-kcal">${Math.round(item.kcal)} kcal</span>
-                    </div>
-                    <div class="meal-macros">
-                        <span class="badge bg-protein">E: ${item.protein.toFixed(1)}g</span>
-                        <span class="badge bg-carbs">K: ${item.carbs.toFixed(1)}g</span>
-                        <span class="badge bg-fat">F: ${item.fett.toFixed(1)}g</span>
-                    </div>
-                `;
+                    `;
+                } else {
+                    // Normaler Anzeige-Modus UI
+                    li.innerHTML = `
+                        <div class="meal-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="meal-time">${item.time}</span>
+                                <span class="meal-name">${item.name} <span style="font-size:11px; color:var(--text-muted)">(${item.amount || '1 Portion'})</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="meal-kcal">${Math.round(item.kcal)} kcal</span>
+                                <span style="cursor:pointer; font-size:14px;" onclick="toggleEdit(${index})">✏️</span>
+                            </div>
+                        </div>
+                        <div class="meal-macros">
+                            <span class="badge bg-protein">E: ${Number(item.protein).toFixed(1)}g</span>
+                            <span class="badge bg-carbs">K: ${Number(item.carbs).toFixed(1)}g</span>
+                            <span class="badge bg-fat">F: ${Number(item.fett).toFixed(1)}g</span>
+                        </div>
+                    `;
+                }
                 logList.appendChild(li);
             });
 
@@ -487,6 +478,49 @@
             }
         }
 
+        // --- SETTINGS & BASICS ---
+        function toggleSettings() {
+            const area = document.getElementById('settingsArea');
+            area.style.display = area.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const goal = document.getElementById('goalInput').value.trim();
+            if(key) localStorage.setItem('groq_api_key', key);
+            if(goal) localStorage.setItem('daily_kcal_goal', goal);
+            DEFAULT_GOAL = goal ? parseInt(goal) : 2000;
+            toggleSettings();
+            updateUI();
+        }
+
+        function loadSettings() {
+            const key = localStorage.getItem('groq_api_key');
+            const goal = localStorage.getItem('daily_kcal_goal');
+            if(key) document.getElementById('apiKeyInput').value = key;
+            if(goal) {
+                document.getElementById('goalInput').value = goal;
+                DEFAULT_GOAL = parseInt(goal);
+            }
+        }
+
+        function checkDailyReset() {
+            const todayStr = new Date().toDateString();
+            const lastSavedDate = localStorage.getItem('last_saved_date');
+            if (lastSavedDate !== todayStr) {
+                localStorage.setItem('meal_log', JSON.stringify([]));
+                localStorage.setItem('last_saved_date', todayStr);
+            }
+        }
+
+        function clearDataManually() {
+            if(confirm("Möchtest du die heutigen Einträge wirklich löschen?")) {
+                localStorage.setItem('meal_log', JSON.stringify([]));
+                updateUI();
+            }
+        }
+
+        // --- GROQ KI LOGIK MIT LERNFUNKTION ---
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
             if(!apiKey) {
@@ -504,16 +538,23 @@
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
+            // Hol deine gespeicherten Korrekturen aus dem Gedächtnis
+            const customDictionary = localStorage.getItem('food_dictionary') || '{}';
+
             const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten Menge zu schätzen.
 
-Regeln:
+WICHTIGE BENUTZERREGELELN (Lern-Modus):
+Der Benutzer hat in der Vergangenheit manuelle Korrekturen vorgenommen. Wenn das eingegebene Lebensmittel mit einem Eintrag aus dieser JSON-Liste übereinstimmt, verwende UNBEDINGT diese Nährwerte als Basis und skaliere sie entsprechend der Menge hoch oder runter:
+${customDictionary}
+
+Allgemeine Schätz-Regeln:
 1. Wenn im Text keine spezifische Marke genannt wird, nimm hypothetische Standardwerte von deutschen Supermarkt-Eigenmarken (z.B. ja!, Gut & Günstig).
-2. Eine Zahl vor dem Lebensmittel definiert die Menge (entweder in Gramm/Milliliter oder als Stück/Scheibe). "Portion" wird ignoriert oder in Gramm geschätzt.
+2. Eine Zahl vor dem Lebensmittel definiert die Menge (entweder in Gramm/Milliliter oder als Stück/Scheibe). 
 3. Wenn keine Zahl genannt wird, nimm standardmäßig die Menge "1 Stück" oder eine übliche Einzelmenge an.
-4. WICHTIG: Berechne die Nährwerte (kcal, protein, carbs, fett) proportional für die gesamte angegebene Menge (NICHT pro 100g).
+4. Berechne die Nährwerte (kcal, protein, carbs, fett) proportional für die gesamte angegebene Menge (NICHT pro 100g).
 
 Ausgabe-Format:
-Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smalltalk, keine Markdown-Formatierung (keine \`\`\`json Blockzeichen).
+Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smalltalk, keine Markdown-Formatierung.
 
 {
   "items": [
@@ -525,7 +566,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
       "protein": 30,
       "carbs": 10,
       "fett": 1
-    }
+                }
   ]
 }`;
 
@@ -537,7 +578,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-120b", 
+                        model: "meta-llama/llama-4-scout-17b-16e-instruct", 
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
@@ -563,6 +604,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
 
                 parsedItems.forEach(item => {
                     item.time = currentTimeStr;
+                    item.isEditing = false;
                     currentLog.push(item);
                 });
 
