@@ -437,18 +437,30 @@
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            const systemPrompt = `Extrahiere die Lebensmittel.
-            Regeln:
-            - Keine Marke genannt nimm eigenmarken von Deutschen Supermaerkten
-            - zahl vor dem Lebensmittel ist entweder Scheibe/Menge oder g/ml, aber nie portion
-            - Gib NUR das JSON-Objekt zurück. Keine Erklärungen.
-            
-            Ausgabe-Format:
-            {
-              "items": [
-                {"name": "1 Ei (ja!)", "kcal": 76, "protein": 6.5, "carbs": 0.5, "fett": 5.5}
-              ]
-            }`;
+            const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten Menge zu schätzen.
+
+Regeln:
+1. Wenn im Text keine spezifische Marke genannt wird, nimm hypothetische Standardwerte von deutschen Supermarkt-Eigenmarken (z.B. ja!, Gut & Günstig).
+2. Eine Zahl vor dem Lebensmittel definiert die Menge (entweder in Gramm/Milliliter oder als Stück/Scheibe). "Portion" wird ignoriert oder in Gramm geschätzt.
+3. Wenn keine Zahl genannt wird, nimm standardmäßig die Menge "1 Stück" oder eine übliche Einzelmenge an.
+4. WICHTIG: Berechne die Nährwerte (kcal, protein, carbs, fett) proportional für die gesamte angegebene Menge (NICHT pro 100g).
+
+Ausgabe-Format:
+Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smalltalk, keine Markdown-Formatierung (keine \`\`\`json Blockzeichen).
+
+{
+  "items": [
+    {
+      "name": "Magerquark",
+      "brand": "Eigenmarke",
+      "amount": "250g",
+      "kcal": 170,
+      "protein": 30,
+      "carbs": 10,
+      "fett": 1
+    }
+  ]
+}`;
 
             try {
                 // JETZT NEU: Direkter Call an die Groq-API Infrastruktur
