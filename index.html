@@ -4,20 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NutriTrack Premium (Groq LPU Edition)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         /* --- CSS & Premium Design --- */
         :root {
             --primary: #10B981; 
             --primary-hover: #059669;
-            --bg-color: #F3F4F6;
+            --primary-light: #D1FAE5;
+            --bg-color: #F8FAFC;
             --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --text-light: #94A3B8;
             --protein-color: #3B82F6; 
             --carbs-color: #F59E0B;   
-            --fat-color: #EF4444;     
+            --fat-color: #EF4444;
+            --border-color: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -27,197 +38,611 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
         body {
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
             color: var(--text-main);
             padding: 20px;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
 
         .app-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 540px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
+            padding-bottom: 40px;
         }
 
+        /* --- HEADER --- */
         .header {
             text-align: center;
-            padding: 10px 0;
-        }
-        .header h1 {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 28px;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            color: var(--text-muted);
-            font-size: 14px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
 
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 36px;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        /* --- CARD --- */
         .card {
             background-color: var(--card-bg);
             border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
         }
 
         .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
             color: var(--text-main);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        .card-title-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .toggle-btn {
+            font-size: 13px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            background: var(--primary-light);
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            text-decoration: none;
+        }
+
+        .toggle-btn:hover {
+            background: #A7F3D0;
+            transform: scale(1.05);
+        }
+
+        .toggle-btn.danger {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .toggle-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- INPUT & FORM --- */
         input, textarea {
             width: 100%;
-            padding: 14px;
-            border: 1px solid #E5E7EB;
-            border-radius: 12px;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
             font-size: 15px;
-            background-color: #F9FAFB;
+            background-color: #FAFBFC;
             outline: none;
             resize: none;
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
         }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-light);
+        }
+
         input:focus, textarea:focus {
             border-color: var(--primary);
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+            transform: translateY(-1px);
+        }
+
+        input:disabled {
+            background-color: #F1F5F9;
+            color: var(--text-light);
+            cursor: not-allowed;
         }
         
         .input-group {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
+        .input-group label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- BUTTON --- */
         button {
             width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-        button:disabled { background-color: #9CA3AF; cursor: not-allowed; box-shadow: none; }
 
-        .progress-wrapper { margin: 20px 0; }
+        button:hover:not(:disabled) { 
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled { 
+            background: linear-gradient(135deg, #CBD5E1 0%, #94A3B8 100%);
+            cursor: not-allowed;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+        }
+
+        button.secondary:hover {
+            background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        button.danger:hover {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+        }
+
+        /* --- PROGRESS --- */
+        .progress-wrapper { 
+            margin: 24px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+            border-radius: 16px;
+            border: 1px solid var(--primary-light);
+        }
+
         .progress-labels {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 12px;
+            font-weight: 700;
             font-size: 14px;
-        }
-        .progress-bar {
-            height: 12px;
-            background-color: #E5E7EB;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-main);
         }
 
+        .progress-bar {
+            height: 16px;
+            background-color: var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--primary-light);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 12px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- MACROS GRID --- */
         .macros-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 14px;
             margin-top: 20px;
         }
+
         .macro-box {
-            background-color: #F9FAFB;
-            padding: 12px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            padding: 18px;
+            border-radius: 16px;
             text-align: center;
-            border: 1px solid #E5E7EB;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .macro-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
-        .macro-value { font-size: 18px; font-weight: 700; }
+
+        .macro-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--protein-color), #3B82F6);
+        }
+
+        .macro-box:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--carbs-color), #F59E0B);
+        }
+
+        .macro-box:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--fat-color), #EF4444);
+        }
+
+        .macro-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--text-light);
+        }
+
+        .macro-label { 
+            font-size: 12px; 
+            color: var(--text-muted); 
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .macro-value { 
+            font-size: 24px; 
+            font-weight: 700;
+        }
+
         .m-protein { color: var(--protein-color); }
         .m-carbs { color: var(--carbs-color); }
         .m-fat { color: var(--fat-color); }
 
-        ul { list-style: none; padding: 0; }
-        li {
-            background-color: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 12px;
+        /* --- LIST & MEALS --- */
+        ul { 
+            list-style: none; 
+            padding: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
         }
-        .meal-header { display: flex; justify-content: space-between; align-items: center; }
-        .meal-time { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-        .meal-name { font-weight: 600; font-size: 15px; }
-        .meal-kcal { font-weight: 700; color: var(--primary); font-size: 15px; }
-        .meal-macros { display: flex; gap: 10px; font-size: 12px; flex-wrap: wrap; }
-        .badge { padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-        .bg-protein { background-color: rgba(59, 130, 246, 0.1); color: var(--protein-color); }
-        .bg-carbs { background-color: rgba(245, 158, 11, 0.1); color: var(--carbs-color); }
-        .bg-fat { background-color: rgba(239, 68, 68, 0.1); color: var(--fat-color); }
 
-        .settings-content { display: none; margin-top: 15px; }
-        .toggle-btn { font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline; }
+        li {
+            background: linear-gradient(135deg, #FAFBFC 0%, #F8FAFC 100%);
+            border: 2px solid var(--border-color);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* Edit Mode Layout */
+        li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), #059669);
+        }
+
+        li:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .meal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meal-time { 
+            font-size: 12px; 
+            color: var(--text-light); 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .meal-name { 
+            font-weight: 700; 
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .meal-amount {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .meal-kcal { 
+            font-weight: 700; 
+            color: var(--primary); 
+            font-size: 18px;
+            background: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .meal-macros { 
+            display: flex; 
+            gap: 10px; 
+            font-size: 12px; 
+            flex-wrap: wrap;
+        }
+
+        .badge { 
+            padding: 6px 12px; 
+            border-radius: 12px; 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bg-protein { 
+            background-color: rgba(59, 130, 246, 0.15); 
+            color: var(--protein-color);
+        }
+
+        .bg-carbs { 
+            background-color: rgba(245, 158, 11, 0.15); 
+            color: var(--carbs-color);
+        }
+
+        .bg-fat { 
+            background-color: rgba(239, 68, 68, 0.15); 
+            color: var(--fat-color);
+        }
+
+        /* --- SETTINGS --- */
+        .settings-content { 
+            display: none; 
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+            border-radius: 16px;
+            border: 2px dashed var(--primary);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-content.show {
+            display: block;
+        }
+
+        .settings-divider {
+            border: 0;
+            border-top: 2px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        /* --- EDIT MODE --- */
         .edit-layout {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            background: #f0fdf4;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px dashed var(--primary);
+            gap: 12px;
+            background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px dashed var(--primary);
         }
+
+        .edit-layout strong {
+            font-size: 14px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .edit-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
+            gap: 8px;
         }
+
         .edit-grid div {
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 4px;
         }
+
         .edit-grid label {
-            font-size: 9px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
+
         .edit-grid input {
             width: 100%;
-            padding: 6px 2px;
-            font-size: 11px;
+            padding: 8px 6px;
+            font-size: 12px;
             text-align: center;
-            border-radius: 6px;
-            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background: white;
         }
+
+        .edit-grid input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
         .edit-actions {
             display: flex;
-            gap: 6px;
-            margin-top: 5px;
+            gap: 8px;
+            margin-top: 8px;
         }
+
         .edit-actions button {
-            padding: 8px;
-            font-size: 12px;
-            border-radius: 6px;
+            flex: 1;
+            padding: 12px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 640px) {
+            .app-container {
+                max-width: 100%;
+                gap: 16px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .macros-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .meal-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .edit-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
         }
     </style>
 </head>
@@ -226,33 +651,46 @@
     <div class="app-container">
         
         <div class="header">
-            <h1>NutriTrack</h1>
+            <h1>🥗 NutriTrack</h1>
             <p>Dein smarter KI-Ernährungscoach (Groq Ultra-Speed)</p>
         </div>
 
         <div class="card">
             <div class="card-title">
-                Heutige Übersicht
-                <span class="toggle-btn" onclick="toggleSettings()">Einstellungen ⚙️</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="card-title-icon">📊</div>
+                    <span>Heutige Übersicht</span>
+                </div>
+                <button class="toggle-btn" onclick="toggleSettings()">
+                    <i class="fas fa-cog"></i> Einstellungen
+                </button>
             </div>
             
             <div id="settingsArea" class="settings-content">
                 <div class="input-group">
-                    <label style="font-size: 12px; color: var(--text-muted);">Groq Cloud API Key</label>
+                    <label>🔑 Groq Cloud API Key</label>
                     <input type="password" id="apiKeyInput" placeholder="gsk_...">
                 </div>
                 <div class="input-group">
-                    <label style="font-size: 12px; color: var(--text-muted);">Tagesziel (kcal)</label>
-                    <input type="number" id="goalInput" placeholder="z.B. 2000">
+                    <label>🎯 Tagesziel (kcal)</label>
+                    <input type="number" id="goalInput" placeholder="z.B. 2000" min="500" max="5000">
                 </div>
-                <button onclick="saveSettings()" style="padding: 10px; font-size: 14px;">Einstellungen speichern</button>
-                <hr style="border: 0; border-top: 1px solid #E5E7EB; margin: 15px 0;">
+                <button onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Einstellungen speichern
+                </button>
+                <hr class="settings-divider">
             </div>
 
             <div class="progress-wrapper">
                 <div class="progress-labels">
-                    <span><span id="totalKcalDisplay">0</span> kcal konsumiert</span>
-                    <span style="color: var(--text-muted);"><span id="remainingKcal">0</span> kcal übrig</span>
+                    <span>
+                        <i class="fas fa-flame" style="color: var(--fat-color); margin-right: 6px;"></i>
+                        <span id="totalKcalDisplay">0</span> kcal konsumiert
+                    </span>
+                    <span style="color: var(--text-muted);">
+                        <i class="fas fa-check-circle" style="color: var(--primary); margin-right: 6px;"></i>
+                        <span id="remainingKcal">0</span> kcal übrig
+                    </span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressBar"></div>
@@ -261,31 +699,49 @@
 
             <div class="macros-grid">
                 <div class="macro-box">
-                    <div class="macro-label">Eiweiß</div>
+                    <div class="macro-label">
+                        <i class="fas fa-egg" style="color: var(--protein-color);"></i> Eiweiß
+                    </div>
                     <div class="macro-value m-protein"><span id="totalProtein">0</span>g</div>
                 </div>
                 <div class="macro-box">
-                    <div class="macro-label">Kohlenhydrate</div>
+                    <div class="macro-label">
+                        <i class="fas fa-bread-slice" style="color: var(--carbs-color);"></i> Kohlenhydrate
+                    </div>
                     <div class="macro-value m-carbs"><span id="totalCarbs">0</span>g</div>
                 </div>
                 <div class="macro-box">
-                    <div class="macro-label">Fett</div>
+                    <div class="macro-label">
+                        <i class="fas fa-droplet" style="color: var(--fat-color);"></i> Fett
+                    </div>
                     <div class="macro-value m-fat"><span id="totalFett">0</span>g</div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">Mahlzeit tracken</div>
+            <div class="card-title">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="card-title-icon">✏️</div>
+                    <span>Mahlzeit tracken</span>
+                </div>
+            </div>
             <textarea id="mealInput" rows="3" placeholder="Z.B.: 1 Apfel, 2 Vollkorntoast und 1 Ei..."></textarea>
             <br><br>
-            <button id="submitBtn" onclick="analyzeMeal()">Smart Scan ✨</button>
+            <button id="submitBtn" onclick="analyzeMeal()">
+                <i class="fas fa-sparkles"></i> Smart Scan
+            </button>
         </div>
 
         <div class="card">
             <div class="card-title">
-                Verlauf
-                <span class="toggle-btn" style="color: var(--fat-color);" onclick="clearDataManually()">Zurücksetzen</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="card-title-icon">📋</div>
+                    <span>Verlauf</span>
+                </div>
+                <button class="toggle-btn danger" onclick="clearDataManually()">
+                    <i class="fas fa-trash"></i> Zurücksetzen
+                </button>
             </div>
             <ul id="logList"></ul>
         </div>
@@ -301,26 +757,38 @@
             updateUI();
         };
 
-        // --- BEARBEITEN & KORREKTUR-SPEICHER LOGIK ---
+        // --- TOGGLE FUNCTIONS ---
+        function toggleSettings() {
+            const area = document.getElementById('settingsArea');
+            area.classList.toggle('show');
+        }
+
+        function closeSettings() {
+            const area = document.getElementById('settingsArea');
+            area.classList.remove('show');
+        }
+
+        // --- EDIT MODE FUNCTIONS ---
         function toggleEdit(index) {
             const log = JSON.parse(localStorage.getItem('meal_log')) || [];
-            log[index].isEditing = !log[index].isEditing;
-            localStorage.setItem('meal_log', JSON.stringify(log));
-            updateUI();
+            if (log[index]) {
+                log[index].isEditing = !log[index].isEditing;
+                localStorage.setItem('meal_log', JSON.stringify(log));
+                updateUI();
+            }
         }
 
         function saveEdit(index) {
             const log = JSON.parse(localStorage.getItem('meal_log')) || [];
             const item = log[index];
 
-            // Neue Werte aus den Inputs auslesen
-            const newAmount = document.getElementById(`editAmount-${index}`).value.trim();
-            const newKcal = Math.round(Number(document.getElementById(`editKcal-${index}`).value));
-            const newProtein = Number(document.getElementById(`editProtein-${index}`).value);
-            const newCarbs = Number(document.getElementById(`editCarbs-${index}`).value);
-            const newFat = Number(document.getElementById(`editFat-${index}`).value);
+            const newAmount = document.getElementById(`editAmount-${index}`)?.value.trim() || item.amount;
+            const newKcal = Math.round(Number(document.getElementById(`editKcal-${index}`)?.value || item.kcal));
+            const newProtein = Number(document.getElementById(`editProtein-${index}`)?.value || item.protein);
+            const newCarbs = Number(document.getElementById(`editCarbs-${index}`)?.value || item.carbs);
+            const newFat = Number(document.getElementById(`editFat-${index}`)?.value || item.fett);
 
-            // 1. Im heutigen Verlauf updaten
+            // Update meal log
             item.amount = newAmount;
             item.kcal = newKcal;
             item.protein = newProtein;
@@ -331,7 +799,7 @@
             log[index] = item;
             localStorage.setItem('meal_log', JSON.stringify(log));
 
-            // 2. Im Gedächtnis inklusive MENGE für den Dreisatz speichern
+            // Update food dictionary
             const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
             const foodKey = item.name.toLowerCase().trim();
             
@@ -347,59 +815,110 @@
             updateUI();
         }
 
+        function deleteMeal(index) {
+            const log = JSON.parse(localStorage.getItem('meal_log')) || [];
+            if (confirm(`Möchtest du "${log[index].name}" wirklich löschen?`)) {
+                log.splice(index, 1);
+                localStorage.setItem('meal_log', JSON.stringify(log));
+                updateUI();
+            }
+        }
+
+        // --- UI UPDATE FUNCTION ---
         function updateUI() {
             const log = JSON.parse(localStorage.getItem('meal_log')) || [];
             let totalKcal = 0, totalProtein = 0, totalCarbs = 0, totalFett = 0;
             const logList = document.getElementById('logList');
             logList.innerHTML = ''; 
 
-            log.forEach((item, index) => {
-                totalKcal += Math.round(Number(item.kcal || 0));
-                totalProtein += Number(item.protein || 0);
-                totalCarbs += Number(item.carbs || 0);
-                totalFett += Number(item.fett || 0);
+            if (log.length === 0) {
+                logList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Noch keine Mahlzeiten erfasst</p>
+                        <p style="font-size: 12px;">Nutze den Smart Scan oben, um deine erste Mahlzeit zu tracken! 🥗</p>
+                    </div>
+                `;
+            } else {
+                log.forEach((item, index) => {
+                    totalKcal += Math.round(Number(item.kcal || 0));
+                    totalProtein += Number(item.protein || 0);
+                    totalCarbs += Number(item.carbs || 0);
+                    totalFett += Number(item.fett || 0);
 
-                const li = document.createElement('li');
+                    const li = document.createElement('li');
+                    li.classList.add('fade-in');
 
-                if (item.isEditing) {
-                    li.innerHTML = `
-                        <div class="edit-layout">
-                            <strong style="font-size:13px; color:var(--primary)">${item.name} anpassen:</strong>
-                            <div class="edit-grid">
-                                <div><label>Menge</label><input type="text" id="editAmount-${index}" value="${item.amount || '100g'}"></div>
-                                <div><label>kcal</label><input type="number" id="editKcal-${index}" value="${Math.round(item.kcal)}"></div>
-                                <div><label>Eiweiß</label><input type="number" step="0.1" id="editProtein-${index}" value="${item.protein}"></div>
-                                <div><label>Kohlenh.</label><input type="number" step="0.1" id="editCarbs-${index}" value="${item.carbs}"></div>
-                                <div><label>Fett</label><input type="number" step="0.1" id="editFat-${index}" value="${item.fett}"></div>
+                    if (item.isEditing) {
+                        li.innerHTML = `
+                            <div class="edit-layout">
+                                <strong>
+                                    <i class="fas fa-edit"></i> ${item.name} anpassen
+                                </strong>
+                                <div class="edit-grid">
+                                    <div>
+                                        <label>Menge</label>
+                                        <input type="text" id="editAmount-${index}" value="${item.amount || '100g'}">
+                                    </div>
+                                    <div>
+                                        <label>kcal</label>
+                                        <input type="number" id="editKcal-${index}" value="${Math.round(item.kcal)}">
+                                    </div>
+                                    <div>
+                                        <label>Eiweiß</label>
+                                        <input type="number" step="0.1" id="editProtein-${index}" value="${item.protein}">
+                                    </div>
+                                    <div>
+                                        <label>Kohlenh.</label>
+                                        <input type="number" step="0.1" id="editCarbs-${index}" value="${item.carbs}">
+                                    </div>
+                                    <div>
+                                        <label>Fett</label>
+                                        <input type="number" step="0.1" id="editFat-${index}" value="${item.fett}">
+                                    </div>
+                                </div>
+                                <div class="edit-actions">
+                                    <button onclick="saveEdit(${index})" style="background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);">
+                                        <i class="fas fa-save"></i> Speichern
+                                    </button>
+                                    <button onclick="toggleEdit(${index})" class="secondary">
+                                        <i class="fas fa-times"></i> Abbrechen
+                                    </button>
+                                </div>
                             </div>
-                            <div class="edit-actions">
-                                <button onclick="saveEdit(${index})" style="background-color: var(--primary);">Speichern & Merken 💾</button>
-                                <button onclick="toggleEdit(${index})" style="background-color: var(--text-muted);">Abbrechen</button>
+                        `;
+                    } else {
+                        li.innerHTML = `
+                            <div class="meal-header">
+                                <div style="flex: 1;">
+                                    <span class="meal-time"><i class="fas fa-clock"></i> ${item.time}</span>
+                                    <div style="margin-top: 6px;">
+                                        <div class="meal-name">${item.name}</div>
+                                        <div class="meal-amount"><i class="fas fa-weight"></i> ${item.amount || '1 Portion'}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; flex-direction: column;">
+                                    <div class="meal-kcal"><i class="fas fa-fire"></i> ${Math.round(item.kcal)}</div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <span style="cursor: pointer; font-size: 18px; padding: 4px 8px; background: var(--primary-light); border-radius: 8px; transition: all 0.2s ease;" 
+                                              onclick="toggleEdit(${index})" title="Bearbeiten">✏️</span>
+                                        <span style="cursor: pointer; font-size: 18px; padding: 4px 8px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; transition: all 0.2s ease; color: var(--danger);" 
+                                              onclick="deleteMeal(${index})" title="Löschen">🗑️</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                } else {
-                    li.innerHTML = `
-                        <div class="meal-header">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span class="meal-time">${item.time}</span>
-                                <span class="meal-name">${item.name} <span style="font-size:11px; color:var(--text-muted)">(${item.amount || '1 Portion'})</span></span>
+                            <div class="meal-macros">
+                                <span class="badge bg-protein"><i class="fas fa-egg"></i> ${Number(item.protein).toFixed(1)}g</span>
+                                <span class="badge bg-carbs"><i class="fas fa-bread-slice"></i> ${Number(item.carbs).toFixed(1)}g</span>
+                                <span class="badge bg-fat"><i class="fas fa-droplet"></i> ${Number(item.fett).toFixed(1)}g</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="meal-kcal">${Math.round(item.kcal)} kcal</span>
-                                <span style="cursor:pointer; font-size:14px;" onclick="toggleEdit(${index})">✏️</span>
-                            </div>
-                        </div>
-                        <div class="meal-macros">
-                            <span class="badge bg-protein">E: ${Number(item.protein).toFixed(1)}g</span>
-                            <span class="badge bg-carbs">K: ${Number(item.carbs).toFixed(1)}g</span>
-                            <span class="badge bg-fat">F: ${Number(item.fett).toFixed(1)}g</span>
-                        </div>
-                    `;
-                }
-                logList.appendChild(li);
-            });
+                        `;
+                    }
+                    logList.appendChild(li);
+                });
+            }
 
+            // Update totals
             document.getElementById('totalKcalDisplay').innerText = totalKcal;
             document.getElementById('totalProtein').innerText = totalProtein.toFixed(1);
             document.getElementById('totalCarbs').innerText = totalCarbs.toFixed(1);
@@ -422,35 +941,47 @@
             }
         }
 
-        // --- SETTINGS & BASICS ---
-        function toggleSettings() {
-            const area = document.getElementById('settingsArea');
-            area.style.display = area.style.display === 'block' ? 'none' : 'block';
-        }
-
+        // --- SETTINGS MANAGEMENT ---
         function saveSettings() {
             const key = document.getElementById('apiKeyInput').value.trim();
             const goal = document.getElementById('goalInput').value.trim();
+            
+            if(!key) {
+                alert('Bitte gib deinen Groq API Key ein!');
+                return;
+            }
+            
+            if(!goal) {
+                alert('Bitte gib dein Tagesziel ein!');
+                return;
+            }
+
             if(key) localStorage.setItem('groq_api_key', key);
             if(goal) localStorage.setItem('daily_kcal_goal', goal);
-            DEFAULT_GOAL = goal ? parseInt(goal) : 2000;
-            toggleSettings();
+            
+            DEFAULT_GOAL = parseInt(goal);
+            closeSettings();
             updateUI();
+            alert('✅ Einstellungen gespeichert!');
         }
 
         function loadSettings() {
             const key = localStorage.getItem('groq_api_key');
             const goal = localStorage.getItem('daily_kcal_goal');
+            
             if(key) document.getElementById('apiKeyInput').value = key;
             if(goal) {
                 document.getElementById('goalInput').value = goal;
                 DEFAULT_GOAL = parseInt(goal);
+            } else {
+                DEFAULT_GOAL = 2000;
             }
         }
 
         function checkDailyReset() {
             const todayStr = new Date().toDateString();
             const lastSavedDate = localStorage.getItem('last_saved_date');
+            
             if (lastSavedDate !== todayStr) {
                 localStorage.setItem('meal_log', JSON.stringify([]));
                 localStorage.setItem('last_saved_date', todayStr);
@@ -458,9 +989,10 @@
         }
 
         function clearDataManually() {
-            if(confirm("Möchtest du die heutigen Einträge wirklich löschen?")) {
+            if(confirm("⚠️ Möchtest du wirklich alle heutigen Einträge löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!")) {
                 localStorage.setItem('meal_log', JSON.stringify([]));
                 updateUI();
+                alert('✅ Alle Einträge gelöscht!');
             }
         }
 
@@ -468,16 +1000,19 @@
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
             if(!apiKey) {
-                alert("Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen GROQ Cloud API Key!");
+                alert("🔑 Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen GROQ Cloud API Key!");
                 return;
             }
 
             const mealText = document.getElementById('mealInput').value.trim();
-            if(!mealText) return;
+            if(!mealText) {
+                alert("📝 Bitte gib eine Mahlzeit ein!");
+                return;
+            }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "Groq analysiert... ⚡";
+            btn.innerHTML = '<i class="fas fa-bolt"></i> Groq analysiert...';
 
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -487,7 +1022,7 @@
             const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten menge zu schätzen.
 
 WICHTIGE BENUTZERREGELN (Lern-Modus):
-Der Benutzer hat in der Vergangenheit manuelle Korrekturen vorgenommen. In der folgenden JSON-Liste siehst du Lebensmittel mit den Nährwerten für eine ganz bestimmte Basismenge ("amount").
+Der Benutzer hat in der Vergangenheit manuelle Korrektionen vorgenommen. In der folgenden JSON-Liste siehst du Lebensmittel mit den Nährwerten für eine ganz bestimmte Basismenge ("amount").
 Wenn das eingegebene Lebensmittel mit einem Eintrag aus dieser Liste übereinstimmt, verwende diesen Eintrag als absolut exakte Referenzbasis und berechne (skaliere) die neuen Nährwerte per Dreisatz exakt proportional auf die vom Benutzer aktuell geforderte Menge hoch oder runter!
 ${customDictionary}
 
@@ -534,7 +1069,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    alert(`Groq-Fehler (Status ${response.status}):\n\n${errorText}`);
+                    alert(`❌ Groq-Fehler (Status ${response.status}):\n\n${errorText}`);
                     return;
                 }
 
@@ -543,6 +1078,11 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                 
                 const parsedData = JSON.parse(aiResponseText);
                 const parsedItems = parsedData.items || [];
+
+                if(parsedItems.length === 0) {
+                    alert("⚠️ Keine Lebensmittel erkannt. Bitte versuche es mit einer anderen Eingabe!");
+                    return;
+                }
 
                 let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
 
@@ -555,13 +1095,14 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                 localStorage.setItem('meal_log', JSON.stringify(currentLog));
                 updateUI();
                 document.getElementById('mealInput').value = '';
+                alert(`✅ ${parsedItems.length} Mahlzeit(en) erfolgreich hinzugefügt!`);
 
             } catch (error) {
                 console.error("Fehler:", error);
-                alert("Fehler beim Verarbeiten: " + error.message);
+                alert("❌ Fehler beim Verarbeiten: " + error.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Smart Scan ✨";
+                btn.innerHTML = '<i class="fas fa-sparkles"></i> Smart Scan';
             }
         }
     </script>
