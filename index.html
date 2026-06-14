@@ -3,69 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition App (OpenRouter Fix)</title>
+    <title>NutriTrack Premium</title>
+    <!-- Moderne Schriftart importieren -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS & Premium Design --- */
+        :root {
+            --primary: #10B981; /* Premium Grün */
+            --primary-hover: #059669;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --protein-color: #3B82F6; /* Blau */
+            --carbs-color: #F59E0B;   /* Orange */
+            --fat-color: #EF4444;     /* Rot */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .header h1 {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 28px;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Inputs & Buttons */
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: #F9FAFB;
+            transition: all 0.3s ease;
+            outline: none;
+            resize: none;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        button:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        button.secondary {
+            background-color: #F3F4F6;
+            color: var(--text-main);
+            box-shadow: none;
+            margin-top: 10px;
+        }
+        button.secondary:hover {
+            background-color: #E5E7EB;
+        }
+
+        /* Kalorien Fortschritt */
+        .progress-wrapper {
+            margin: 20px 0;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .progress-bar {
+            height: 12px;
+            background-color: #E5E7EB;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #34D399);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Makros Dashboard */
+        .macros-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .macro-box {
+            background-color: #F9FAFB;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #E5E7EB;
+        }
+        .macro-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .macro-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .m-protein { color: var(--protein-color); }
+        .m-carbs { color: var(--carbs-color); }
+        .m-fat { color: var(--fat-color); }
+
+        /* Listen Styling */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .meal-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .meal-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .meal-kcal {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
+        }
+        .meal-macros {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .bg-protein { background-color: rgba(59, 130, 246, 0.1); color: var(--protein-color); }
+        .bg-carbs { background-color: rgba(245, 158, 11, 0.1); color: var(--carbs-color); }
+        .bg-fat { background-color: rgba(239, 68, 68, 0.1); color: var(--fat-color); }
+
+        /* Settings Toggle */
+        .settings-content {
+            display: none; /* Standardmäßig versteckt, um Platz zu sparen */
+            margin-top: 15px;
+        }
+        .toggle-btn {
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
 
-    <h1>Nutrition App (OpenRouter Free v7)</h1>
+    <div class="app-container">
+        
+        <div class="header">
+            <h1>NutriTrack</h1>
+            <p>Dein smarter KI-Ernährungscoach</p>
+        </div>
 
-    <section>
-        <h3>1. API Einstellungen</h3>
-        <input type="password" id="apiKeyInput" placeholder="OpenRouter Key (sk-or-...)">
-        <button onclick="saveApiKey()">Key speichern</button>
-    </section>
+        <!-- DASHBOARD CARD -->
+        <div class="card">
+            <div class="card-title">
+                Heutige Übersicht
+                <span class="toggle-btn" onclick="toggleSettings()">Einstellungen ⚙️</span>
+            </div>
+            
+            <!-- Einstellungen (Versteckt bis Klick) -->
+            <div id="settingsArea" class="settings-content">
+                <div class="input-group">
+                    <label style="font-size: 12px; color: var(--text-muted);">OpenRouter API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="sk-or-...">
+                </div>
+                <div class="input-group">
+                    <label style="font-size: 12px; color: var(--text-muted);">Tagesziel (kcal)</label>
+                    <input type="number" id="goalInput" placeholder="z.B. 2000">
+                </div>
+                <button onclick="saveSettings()" style="padding: 10px; font-size: 14px;">Einstellungen speichern</button>
+                <hr style="border: 0; border-top: 1px solid #E5E7EB; margin: 15px 0;">
+            </div>
 
-    <hr>
+            <div class="progress-wrapper">
+                <div class="progress-labels">
+                    <span><span id="totalKcalDisplay">0</span> kcal konsumiert</span>
+                    <span style="color: var(--text-muted);"><span id="remainingKcal">0</span> kcal übrig</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
 
-    <section>
-        <h3>2. Tagesübersicht</h3>
-        <p>Tagesziel: 2000 kcal</p>
-        <p>Konsumiert: <strong id="totalKcal">0</strong> kcal</p>
-        <p>Verbleibend: <strong id="remainingKcal">2000</strong> kcal</p>
-        <p>Eiweiß: <strong id="totalProtein">0</strong>g | Kohlenhydrate: <strong id="totalCarbs">0</strong>g | Fett: <strong id="totalFett">0</strong>g</p>
-        <button onclick="clearDataManually()">Heute manuell zurücksetzen</button>
-    </section>
+            <div class="macros-grid">
+                <div class="macro-box">
+                    <div class="macro-label">Eiweiß</div>
+                    <div class="macro-value m-protein"><span id="totalProtein">0</span>g</div>
+                </div>
+                <div class="macro-box">
+                    <div class="macro-label">Kohlenhydrate</div>
+                    <div class="macro-value m-carbs"><span id="totalCarbs">0</span>g</div>
+                </div>
+                <div class="macro-box">
+                    <div class="macro-label">Fett</div>
+                    <div class="macro-value m-fat"><span id="totalFett">0</span>g</div>
+                </div>
+            </div>
+        </div>
 
-    <hr>
+        <!-- TRACKING CARD -->
+        <div class="card">
+            <div class="card-title">Mahlzeit tracken</div>
+            <textarea id="mealInput" rows="3" placeholder="Z.B.: 1 Apfel, 2 Vollkorntoast und 1 Ei..."></textarea>
+            <br><br>
+            <button id="submitBtn" onclick="analyzeMeal()">Smart Scan ✨</button>
+        </div>
 
-    <section>
-        <h3>3. Mahlzeit eingeben</h3>
-        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Ei oder 2 Vollkorntoast"></textarea>
-        <br><br>
-        <button id="submitBtn" onclick="analyzeMeal()">Mahlzeit analysieren</button>
-        <p id="loadingText" style="display:none; color: blue;">Präzise Berechnung läuft... Bitte warten...</p>
-    </section>
+        <!-- LOG CARD -->
+        <div class="card">
+            <div class="card-title">
+                Verlauf
+                <span class="toggle-btn" style="color: var(--fat-color);" onclick="clearDataManually()">Zurücksetzen</span>
+            </div>
+            <ul id="logList">
+                <!-- Dynamischer Inhalt -->
+            </ul>
+        </div>
 
-    <hr>
-
-    <section>
-        <h3>4. Heutige Mahlzeiten</h3>
-        <ul id="logList"></ul>
-    </section>
+    </div>
 
     <script>
-        const DAILY_GOAL = 2000;
+        // Standard-Ziel, falls der User noch nichts eingestellt hat
+        let DEFAULT_GOAL = 2000;
 
         window.onload = function() {
             checkDailyReset();
-            loadApiKey();
+            loadSettings();
             updateUI();
         };
 
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if(!key) {
-                alert("Bitte einen Key eingeben.");
-                return;
+        function toggleSettings() {
+            const area = document.getElementById('settingsArea');
+            if(area.style.display === 'block') {
+                area.style.display = 'none';
+            } else {
+                area.style.display = 'block';
             }
-            localStorage.setItem('openrouter_api_key', key);
-            alert('OpenRouter Key gespeichert!');
         }
 
-        function loadApiKey() {
+        function saveSettings() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const goal = document.getElementById('goalInput').value.trim();
+
+            if(key) localStorage.setItem('openrouter_api_key', key);
+            if(goal) localStorage.setItem('daily_kcal_goal', goal);
+            
+            DEFAULT_GOAL = goal ? parseInt(goal) : 2000;
+            
+            toggleSettings();
+            updateUI(); // UI direkt mit neuem Ziel aktualisieren
+        }
+
+        function loadSettings() {
             const key = localStorage.getItem('openrouter_api_key');
-            if(key) {
-                document.getElementById('apiKeyInput').value = key;
+            const goal = localStorage.getItem('daily_kcal_goal');
+
+            if(key) document.getElementById('apiKeyInput').value = key;
+            if(goal) {
+                document.getElementById('goalInput').value = goal;
+                DEFAULT_GOAL = parseInt(goal);
             }
         }
 
@@ -80,7 +382,7 @@
         }
 
         function clearDataManually() {
-            if(confirm("Wirklich alle heutigen Daten löschen?")) {
+            if(confirm("Möchtest du die heutigen Einträge wirklich löschen?")) {
                 localStorage.setItem('meal_log', JSON.stringify([]));
                 updateUI();
             }
@@ -98,35 +400,67 @@
                 totalCarbs += Number(item.carbs || 0);
                 totalFett += Number(item.fett || 0);
 
+                // Premium UI für die Liste generieren
                 const li = document.createElement('li');
-                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${Math.round(item.kcal)} kcal (E:${item.protein.toFixed(1)}g, K:${item.carbs.toFixed(1)}g, F:${item.fett.toFixed(1)}g)`;
+                li.innerHTML = `
+                    <div class="meal-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="meal-time">${item.time}</span>
+                            <span class="meal-name">${item.name}</span>
+                        </div>
+                        <span class="meal-kcal">${Math.round(item.kcal)} kcal</span>
+                    </div>
+                    <div class="meal-macros">
+                        <span class="badge bg-protein">E: ${item.protein.toFixed(1)}g</span>
+                        <span class="badge bg-carbs">K: ${item.carbs.toFixed(1)}g</span>
+                        <span class="badge bg-fat">F: ${item.fett.toFixed(1)}g</span>
+                    </div>
+                `;
                 logList.appendChild(li);
             });
 
-            document.getElementById('totalKcal').innerText = totalKcal;
-            document.getElementById('remainingKcal').innerText = DAILY_GOAL - totalKcal;
+            // Zahlen im Dashboard aktualisieren
+            document.getElementById('totalKcalDisplay').innerText = totalKcal;
             document.getElementById('totalProtein').innerText = totalProtein.toFixed(1);
             document.getElementById('totalCarbs').innerText = totalCarbs.toFixed(1);
             document.getElementById('totalFett').innerText = totalFett.toFixed(1);
+
+            // Verbleibende Kcal und Balken berechnen
+            let remaining = DEFAULT_GOAL - totalKcal;
+            if (remaining < 0) remaining = 0;
+            document.getElementById('remainingKcal').innerText = remaining;
+
+            let percentage = (totalKcal / DEFAULT_GOAL) * 100;
+            if (percentage > 100) percentage = 100;
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            
+            // Wenn Ziel überschritten, wird der Balken rot
+            if(totalKcal > DEFAULT_GOAL) {
+                progressBar.style.background = 'linear-gradient(90deg, #EF4444, #F87171)';
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, var(--primary), #34D399)';
+            }
         }
 
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('openrouter_api_key');
             if(!apiKey) {
-                alert("Bitte gib zuerst deinen OpenRouter API Key oben ein!");
+                alert("Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen OpenRouter API Key!");
                 return;
             }
 
             const mealText = document.getElementById('mealInput').value.trim();
             if(!mealText) return;
 
-            document.getElementById('loadingText').style.display = 'block';
-            document.getElementById('submitBtn').disabled = true;
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "KI analysiert... ⏳";
 
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            // OPTIMIERTER PROMPT: Kürzer, aggressiver, fehlerfrei für JSON-Mode
             const systemPrompt = `Extrahiere die Lebensmittel.
             Regeln:
             - Keine Marke genannt nimm eigenmarken von Deutschen Supermaerkten
@@ -149,7 +483,6 @@
                     },
                     body: JSON.stringify({
                         model: "openrouter/owl-alpha",
-                        // HIER NEU: Zwingt OpenRouter/Modell in den schnellen JSON-Modus
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
@@ -161,7 +494,7 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    alert(`OpenRouter Fehler (Status ${response.status}):\n\n${errorText}`);
+                    alert(`Fehler (Status ${response.status}):\n\n${errorText}`);
                     return;
                 }
 
@@ -186,8 +519,8 @@
                 console.error("Fehler:", error);
                 alert("Fehler beim Verarbeiten: " + error.message);
             } finally {
-                document.getElementById('loadingText').style.display = 'none';
-                document.getElementById('submitBtn').disabled = false;
+                btn.disabled = false;
+                btn.innerText = "Smart Scan ✨";
             }
         }
     </script>
