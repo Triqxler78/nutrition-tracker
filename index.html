@@ -471,7 +471,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-120b", // Starkes & ultraschnelles Modell auf Groq
+                        model: "meta-llama/llama-4-scout-17b-16e-instruct", // Starkes & ultraschnelles Modell auf Groq
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
