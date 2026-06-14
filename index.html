@@ -1005,52 +1005,6 @@
     </div>
 
     <script>
-        // ==================== GERMAN FOOD DATABASE ====================
-        // Basiert auf Lebensmitteldatenbank und deutschen Supermärkten
-        const FOOD_DATABASE = {
-            'eier': { kcal: 78, protein: 6.3, carbs: 0.6, fat: 5.3, unit: 'Stk.' },
-            'vollkornbrot': { kcal: 214, protein: 7.6, carbs: 43.3, fat: 1.5, unit: '100g' },
-            'butter': { kcal: 717, protein: 0.9, carbs: 0.1, fat: 81.1, unit: '10g' },
-            'milch': { kcal: 64, protein: 3.2, carbs: 4.8, fat: 3.6, unit: '100ml' },
-            'joghurt': { kcal: 59, protein: 3.5, carbs: 4.7, fat: 0.4, unit: '100g' },
-            'käse': { kcal: 402, protein: 25.5, carbs: 1.3, fat: 33.7, unit: '30g' },
-            'huhn': { kcal: 165, protein: 31, carbs: 0, fat: 3.6, unit: '100g' },
-            'rind': { kcal: 250, protein: 26, carbs: 0, fat: 15.5, unit: '100g' },
-            'schwein': { kcal: 242, protein: 27, carbs: 0, fat: 14, unit: '100g' },
-            'fisch': { kcal: 206, protein: 22, carbs: 0, fat: 12.5, unit: '100g' },
-            'apfel': { kcal: 52, protein: 0.3, carbs: 13.8, fat: 0.2, unit: '100g' },
-            'banane': { kcal: 89, protein: 1.1, carbs: 23, fat: 0.3, unit: '100g' },
-            'orange': { kcal: 47, protein: 0.9, carbs: 11.8, fat: 0.1, unit: '100g' },
-            'erdbeere': { kcal: 32, protein: 0.8, carbs: 7.7, fat: 0.3, unit: '100g' },
-            'tomate': { kcal: 18, protein: 0.9, carbs: 3.9, fat: 0.2, unit: '100g' },
-            'salat': { kcal: 15, protein: 1.2, carbs: 2.9, fat: 0.1, unit: '100g' },
-            'kartoffel': { kcal: 77, protein: 2, carbs: 17.5, fat: 0.1, unit: '100g' },
-            'reis': { kcal: 130, protein: 2.7, carbs: 28, fat: 0.3, unit: '100g' },
-            'pasta': { kcal: 131, protein: 5, carbs: 25, fat: 1.1, unit: '100g' },
-            'brot': { kcal: 265, protein: 8, carbs: 49, fat: 3.4, unit: '100g' },
-            'müsli': { kcal: 368, protein: 10, carbs: 71, fat: 5.3, unit: '100g' },
-            'haferflocken': { kcal: 389, protein: 17, carbs: 66, fat: 6.9, unit: '100g' },
-            'nüsse': { kcal: 607, protein: 21, carbs: 20, fat: 54, unit: '100g' },
-            'schokolade': { kcal: 535, protein: 7.4, carbs: 57, fat: 30.5, unit: '100g' },
-            'pizza': { kcal: 285, protein: 12, carbs: 36, fat: 10, unit: '100g' },
-            'burger': { kcal: 215, protein: 15, carbs: 20, fat: 8, unit: '100g' },
-            'käsekuchen': { kcal: 321, protein: 7.5, carbs: 36, fat: 17, unit: '100g' },
-            'schnitzel': { kcal: 206, protein: 22, carbs: 12, fat: 8.5, unit: '100g' },
-            'bratwurst': { kcal: 301, protein: 12, carbs: 0, fat: 27, unit: '100g' },
-            'currywurst': { kcal: 350, protein: 13, carbs: 12, fat: 28, unit: '100g' },
-            'ketchup': { kcal: 112, protein: 1.6, carbs: 26, fat: 0.1, unit: '15ml' },
-            'mayonnaise': { kcal: 680, protein: 1, carbs: 0.6, fat: 75, unit: '15ml' },
-            'öl': { kcal: 884, protein: 0, carbs: 0, fat: 100, unit: '10ml' },
-            'zucker': { kcal: 387, protein: 0, carbs: 100, fat: 0, unit: '10g' },
-            'honig': { kcal: 304, protein: 0.3, carbs: 82, fat: 0, unit: '20g' },
-            'saft': { kcal: 42, protein: 0.4, carbs: 10, fat: 0.1, unit: '100ml' },
-            'cola': { kcal: 42, protein: 0, carbs: 10.6, fat: 0, unit: '100ml' },
-            'bier': { kcal: 43, protein: 0.3, carbs: 2.6, fat: 0, unit: '100ml' },
-            'wein': { kcal: 82, protein: 0.1, carbs: 2.6, fat: 0, unit: '100ml' },
-            'kaffee': { kcal: 2, protein: 0.3, carbs: 0, fat: 0.1, unit: '100ml' },
-            'tee': { kcal: 2, protein: 0, carbs: 0.5, fat: 0, unit: '100ml' },
-        };
-
         // ==================== STATE MANAGEMENT ====================
         const AppState = {
             apiKey: localStorage.getItem('groqApiKey') || '',
@@ -1181,7 +1135,7 @@
             submitBtn.disabled = true;
 
             try {
-                const prompt = `Du bist ein Ernährungsexperte. Analysiere die folgende Lebensmittel-Beschreibung und schätze den Kaloriengehalt und die Makronährstoffe basierend auf deutschen Supermärkten wie Lidl, Aldi und Rewe.
+                const prompt = `Du bist ein Ernährungsexperte. Analysiere die folgende Lebensmittel-Beschreibung und schätze den Kaloriengehalt und die Makronährstoffe basierend auf deutschen Supermärkten wie Lidl, Aldi, Rewe und Penny sowie der deutschen Lebensmitteldatenbank.
 
 Gib EXAKT ein JSON-Objekt zurück mit diesen Feldern:
 - "food": Deutsche Beschreibung des Lebensmittels
