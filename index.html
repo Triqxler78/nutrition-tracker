@@ -18,8 +18,6 @@
             --protein-color: #3B82F6; 
             --carbs-color: #F59E0B;   
             --fat-color: #EF4444;     
-            --voice-color: #3B82F6;   
-            --voice-hover: #2563EB;
         }
 
         * {
@@ -113,13 +111,6 @@
         button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         button:disabled { background-color: #9CA3AF; cursor: not-allowed; box-shadow: none; }
 
-        button.voice-btn {
-            background-color: var(--voice-color);
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
-            margin-bottom: 10px;
-        }
-        button.voice-btn:hover { background-color: var(--voice-hover); }
-
         .progress-wrapper { margin: 20px 0; }
         .progress-labels {
             display: flex;
@@ -184,7 +175,7 @@
         .settings-content { display: none; margin-top: 15px; }
         .toggle-btn { font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline; }
 
-        /* Edit Mode Layout optimiert */
+        /* Edit Mode Layout */
         .edit-layout {
             display: flex;
             flex-direction: column;
@@ -211,6 +202,7 @@
             margin-bottom: 2px;
         }
         .edit-grid input {
+            width: 100%;
             padding: 6px 2px;
             font-size: 11px;
             text-align: center;
@@ -238,7 +230,6 @@
             <p>Dein smarter KI-Ernährungscoach (Groq Ultra-Speed)</p>
         </div>
 
-        <!-- DASHBOARD -->
         <div class="card">
             <div class="card-title">
                 Heutige Übersicht
@@ -284,16 +275,13 @@
             </div>
         </div>
 
-        <!-- TRACKING AREA -->
         <div class="card">
             <div class="card-title">Mahlzeit tracken</div>
             <textarea id="mealInput" rows="3" placeholder="Z.B.: 1 Apfel, 2 Vollkorntoast und 1 Ei..."></textarea>
             <br><br>
-            <button id="micBtn" class="voice-btn" onclick="startVoiceInput()">🎙️ Per Sprache eingeben</button>
             <button id="submitBtn" onclick="analyzeMeal()">Smart Scan ✨</button>
         </div>
 
-        <!-- VERLAUF (LOG) -->
         <div class="card">
             <div class="card-title">
                 Verlauf
@@ -306,72 +294,12 @@
 
     <script>
         let DEFAULT_GOAL = 2000;
-        let speechRecognitionInstance = null;
 
         window.onload = function() {
             checkDailyReset();
             loadSettings();
             updateUI();
         };
-
-        // --- SPRACHEINGABE FÜR IPHONE ---
-        function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (!SpeechRecognition) {
-                alert("Spracherkennung wird von deinem Browser nicht unterstützt. Bitte nutze Safari oder Chrome auf dem iPhone.");
-                return;
-            }
-
-            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                alert("WICHTIG FÜR IPHONE:\nDas Mikrofon ist aus Datenschutzgründen nur erlaubt, wenn die Seite über eine sichere Verbindung (HTTPS) läuft!\n\nBitte lade den Code auf GitHub Pages hoch.");
-                return;
-            }
-
-            const micBtn = document.getElementById('micBtn');
-            const mealInput = document.getElementById('mealInput');
-
-            if (speechRecognitionInstance) {
-                speechRecognitionInstance.stop();
-                return;
-            }
-
-            speechRecognitionInstance = new SpeechRecognition();
-            speechRecognitionInstance.lang = 'de-DE';
-            speechRecognitionInstance.interimResults = false;
-            speechRecognitionInstance.maxAlternatives = 1;
-
-            speechRecognitionInstance.onstart = function() {
-                micBtn.innerText = "🛑 Stoppen & Text einfügen...";
-                micBtn.style.backgroundColor = "#EF4444";
-            };
-
-            speechRecognitionInstance.onresult = function(event) {
-                const spokenText = event.results[0][0].transcript;
-                if (mealInput.value.trim() !== "") {
-                    mealInput.value += " " + spokenText;
-                } else {
-                    mealInput.value = spokenText;
-                }
-            };
-
-            speechRecognitionInstance.onerror = function(event) {
-                console.error("Sprachfehler:", event.error);
-                if (event.error === 'not-allowed') {
-                    alert("Mikrofon-Zugriff verweigert! Bitte gehe in die iPhone-Einstellungen -> Safari -> Mikrofon und erlaube den Zugriff für diese Webseite.");
-                } else if(event.error !== 'no-speech') {
-                    alert("Fehler bei Spracheingabe: " + event.error);
-                }
-            };
-
-            speechRecognitionInstance.onend = function() {
-                micBtn.innerText = "🎙️ Per Sprache eingeben";
-                micBtn.style.backgroundColor = "var(--voice-color)";
-                speechRecognitionInstance = null;
-            };
-
-            speechRecognitionInstance.start();
-        }
 
         // --- BEARBEITEN & KORREKTUR-SPEICHER LOGIK ---
         function toggleEdit(index) {
@@ -403,12 +331,12 @@
             log[index] = item;
             localStorage.setItem('meal_log', JSON.stringify(log));
 
-            // 2. Im Gedächtnis inklusive MENGE für den Dreisatz speichern!
+            // 2. Im Gedächtnis inklusive MENGE für den Dreisatz speichern
             const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
             const foodKey = item.name.toLowerCase().trim();
             
             dictionary[foodKey] = {
-                amount: newAmount, // Hier merken wir uns jetzt ob es für '100g' oder '1 Stück' gilt!
+                amount: newAmount, 
                 kcal: newKcal,
                 protein: newProtein,
                 carbs: newCarbs,
@@ -556,7 +484,7 @@
 
             const customDictionary = localStorage.getItem('food_dictionary') || '{}';
 
-            const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten Menge zu schätzen.
+            const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten menge zu schätzen.
 
 WICHTIGE BENUTZERREGELN (Lern-Modus):
 Der Benutzer hat in der Vergangenheit manuelle Korrekturen vorgenommen. In der folgenden JSON-Liste siehst du Lebensmittel mit den Nährwerten für eine ganz bestimmte Basismenge ("amount").
