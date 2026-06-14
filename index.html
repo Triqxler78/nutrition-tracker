@@ -118,86 +118,88 @@
 
         // 4. KI ANALYSE VIA GROQ API
         async function analyzeMeal() {
-            const apiKey = localStorage.getItem('groq_api_key');
-            if(!apiKey) {
-                alert("Bitte gib zuerst einen Groq API Key ein!");
-                return;
-            }
+    const apiKey = localStorage.getItem('groq_api_key');
+    if(!apiKey) {
+        alert("Bitte gib zuerst einen Groq API Key ein!");
+        return;
+    }
 
-            const mealText = document.getElementById('mealInput').value;
-            if(!mealText.trim()) return;
+    const mealText = document.getElementById('mealInput').value;
+    if(!mealText.trim()) return;
 
-            // Lade-Indikator anzeigen
-            document.getElementById('loadingText').style.display = 'block';
-            document.getElementById('submitBtn').disabled = true;
+    // Lade-Indikator anzeigen
+    document.getElementById('loadingText').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
 
-            // Uhrzeit festhalten
-            const now = new Date();
-            const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            // System Prompt: Zwingt die KI, nur valides JSON zurückzugeben und deutsche Marken zu beachten
-            const systemPrompt = `Du bist ein präziser Ernährungsberater für den deutschen Markt. 
-            Analysiere den Text des Nutzers. Erkenne die Zutaten und schätze die Nährwerte (Kcal, Eiweiß, Kohlenhydrate, Fett) basierend auf typischen Werten deutscher Supermärkte (z.B. Ja!, Gut&Günstig, Milbona, Eigenmarken), falls angegeben.
-            Antworte AUSSCHLIESSLICH mit einem validen JSON-Array. Keine Einleitung, kein Text drumherum.
-            Format-Beispiel:
-            [
-              {"name": "1L Eiweiß (Milbona)", "kcal": 500, "protein": 110, "carbs": 10, "fett": 2},
-              {"name": "2 Vollkorntoastbrot (Ja!)", "kcal": 140, "protein": 5, "carbs": 26, "fett": 2}
-            ]`;
+    const systemPrompt = `Du bist ein präziser Ernährungsberater für den deutschen Markt. 
+    Analysiere den Text des Nutzers. Erkenne die Zutaten und schätze die Nährwerte (Kcal, Eiweiß, Kohlenhydrate, Fett) basierend auf typischen Werten deutscher Supermärkte (z.B. Ja!, Gut&Günstig, Milbona, Eigenmarken), falls angegeben.
+    Antworte AUSSCHLIESSLICH mit einem validen JSON-Array. Keine Einleitung, kein Text drumherum.
+    Format-Beispiel:
+    [
+      {"name": "1L Eiweiß (Milbona)", "kcal": 500, "protein": 110, "carbs": 10, "fett": 2},
+      {"name": "2 Vollkorntoastbrot (Ja!)", "kcal": 140, "protein": 5, "carbs": 26, "fett": 2}
+    ]`;
 
-            try {
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.1-70b-versatile", // Ein extrem starkes und schlaues Modell
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: mealText }
-                        ],
-                        temperature: 0.1 // Niedrige Temperatur für faktenbasierte Daten
-                    })
-                });
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                // Aktualisiertes, stabiles Modell von Groq
+                model: "llama3-70b-8192", 
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: mealText }
+                ],
+                temperature: 0.1
+            })
+        });
 
-                const data = await response.json();
-                
-                // Antwort-Text von der KI holen
-                let aiResponseText = data.choices[0].message.content.trim();
-                
-                // Falls die KI wider Erwarten Markdown-Codeblöcke verwendet (```json ... ```), diese entfernen
-                aiResponseText = aiResponseText.replace(/```json|```/g, '');
-
-                // JSON parsen
-                const parsedItems = JSON.parse(aiResponseText);
-
-                // Bestehendes Log aus LocalStorage laden
-                let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
-
-                // Jedes von der KI erkannte Item mit der aktuellen Uhrzeit versehen und abspeichern
-                parsedItems.forEach(item => {
-                    item.time = currentTimeStr;
-                    currentLog.push(item);
-                });
-
-                // Im LocalStorage speichern und UI updaten
-                localStorage.setItem('meal_log', JSON.stringify(currentLog));
-                updateUI();
-                
-                // Textfeld leeren
-                document.getElementById('mealInput').value = '';
-
-            } catch (error) {
-                console.error("Fehler bei der API oder beim Parsen:", error);
-                alert("Fehler bei der Analyse. Schau in die Konsole (F12).");
-            } finally {
-                // Lade-Indikator ausblenden
-                document.getElementById('loadingText').style.display = 'none';
-                document.getElementById('submitBtn').disabled = false;
-            }
+        // HIER NEU: Wenn der Server (Groq) einen Fehler wirft, loggen wir die exakte Begründung
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            console.error("Groq API Fehler-Details vom Server:", errorDetails);
+            throw new Error(`Server antwortete mit Status ${response.status}`);
         }
+
+        const data = await response.json();
+        
+        // Sicherstellen, dass die Struktur existiert, bevor wir darauf zugreifen
+        if (!data.choices || !data.choices[0]) {
+            console.error("Unerwartete API-Antwortstruktur:", data);
+            throw new Error("API-Antwort hat keine 'choices'.");
+        }
+
+        let aiResponseText = data.choices[0].message.content.trim();
+        aiResponseText = aiResponseText.replace(/```json|```/g, '');
+
+        const parsedItems = JSON.parse(aiResponseText);
+        let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
+
+        parsedItems.forEach(item => {
+            item.time = currentTimeStr;
+            currentLog.push(item);
+        });
+
+        localStorage.setItem('meal_log', JSON.stringify(currentLog));
+        updateUI();
+        
+        document.getElementById('mealInput').value = '';
+
+    } catch (error) {
+        console.error("Fehler im Detail:", error);
+        alert("Fehler bei der Analyse. Schau bitte in die F12-Konsole für die exakte Fehlermeldung von Groq.");
+    } finally {
+        document.getElementById('loadingText').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+    }
+}
     </script>
 </body>
 </html>
