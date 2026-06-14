@@ -459,7 +459,7 @@
                     },
                     body: JSON.stringify({
                         // HIER WIEDER GEÄNDERT: Grok-2 von x-ai via OpenRouter
-                        model: "groq/compound",
+                        model: "openai/gpt-oss-120b",
                         response_format: { "type": "json_object" }, 
                         messages: [
                             { role: "system", content: systemPrompt },
