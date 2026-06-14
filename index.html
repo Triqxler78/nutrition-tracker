@@ -847,10 +847,10 @@
             document.getElementById('headerDate').textContent = dateStr;
         }
 
-        // ==================== GROQ API WITH MACRO ANALYSIS ====================
-        async function analyzeFoodWithGroq(foodDescription) {
+// ==================== HUGGING FACE API (100% FREE, NO CARD REQUIRED) ====================
+        async function analyzeFoodWithHuggingFace(foodDescription) {
             if (!AppState.apiKey) {
-                showToast('Bitte Groq API Key in den Einstellungen setzen', 'error');
+                showToast('Bitte Hugging Face API Key (hf_...) in den Einstellungen setzen', 'error');
                 return null;
             }
 
@@ -859,66 +859,72 @@
             submitBtn.disabled = true;
 
             try {
-                // Optimierter Prompt für Listen/Arrays und deutsche Eigenmarken
-                const prompt = `Du bist ein hochpräziser Ernährungsberater und eine professionelle Lebensmitteldatenbank. 
-Analysiere die folgende Eingabe und teile sie in einzelne Lebensmittel auf, falls mehrere genannt werden. 
+                const prompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Du bist ein hochpräziser Ernährungsberater und eine professionelle Lebensmitteldatenbank. 
+Analysiere die Eingabe des Nutzers und teile sie in einzelne Lebensmittel auf, falls mehrere genannt werden. 
 
 Regeln für die Nährwertberechnung:
-1. Nutze strikt die exakten Nährwerte von deutschen Supermarkt-Eigenmarken (z.B. "Ja!", "Gut & Günstig", "Milbona", "K-Classic").
+1. Nutze strikt die exakten Nährwerte von bekannten deutschen Supermarkt-Eigenmarken (z.B. "Ja!", "Gut & Günstig", "Milbona", "K-Classic").
 2. Berechne die Makros und Kalorien mathematisch exakt auf die angegebene Menge (z.B. 200g oder Stückzahl) herunter.
-3. Nenne die angenommene Marke in der Beschreibung.
+3. Nenne die angenommene Marke zwingend in der Beschreibung.
 
-Gib EXAKT ein JSON-Objekt zurück, das einen Schlüssel "items" enthält. Der Wert von "items" ist ein Array aus den erkannten Lebensmitteln.
-Jedes Objekt im Array MUSS diese Felder haben:
-- "food": Exakte deutsche Beschreibung inkl. Menge und Marke (z.B. "200g Vollkornbrot (Gut & Günstig)")
-- "kcal": Kalorien als ganze Zahl
-- "protein": Proteine in Gramm (Dezimalzahl)
-- "carbs": Kohlenhydrate in Gramm (Dezimalzahl)
-- "fat": Fett in Gramm (Dezimalzahl)
+Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt, das einen Schlüssel "items" besitzt. "items" enthält ein Array aus Objekten.
+Verwende KEIN Markdown (keine \`\`\`json Blöcke), keine Einleitung und keine Erklärungen! Nur das rohe JSON!
 
-Eingabe: "${foodDescription}"`;
+Strukturbeispiel:
+{"items": [{"food": "200g Vollkornbrot (Gut & Günstig)", "kcal": 420, "protein": 12.4, "carbs": 68.0, "fat": 2.2}]}
 
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
+
+                // Wir nutzen das extrem starke Llama 3.3 70B Modell über die Gratis-Schnittstelle
+                const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${AppState.apiKey}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: [{ role: 'user', content: prompt }],
-                        temperature: 0.1, // Sehr analytisch und exakt
-                        max_tokens: 600,
-                        response_format: { type: 'json_object' } // Zwingt die API, sauberes JSON auszugeben!
+                        inputs: prompt,
+                        parameters: {
+                            temperature: 0.1,
+                            max_new_tokens: 500,
+                            return_full_text: false
+                        }
                     })
                 });
 
                 if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error?.message || 'API Fehler');
+                    throw new Error('Fehler bei der Hugging Face API. Ist der Key korrekt?');
                 }
 
                 const data = await response.json();
-                const content = JSON.parse(data.choices[0].message.content);
                 
-                // Wir extrahieren das Array "items" aus dem generierten JSON-Objekt
+                // Hugging Face gibt ein Array zurück, das generierte Text-Ergebnis extrahieren
+                let generatedText = data[0]?.generated_text || data.generated_text;
+                if (!generatedText) throw new Error('Keine Antwort von der KI erhalten.');
+
+                // Bereinige den Text, falls die KI trotz Verbot Markdown-Code-Blöcke genutzt hat
+                generatedText = generatedText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+                const content = JSON.parse(generatedText);
                 const itemsArray = content.items || [];
 
                 if (itemsArray.length === 0) {
                     throw new Error('Konnte keine Lebensmittel erkennen.');
                 }
 
-                // Filtere ungültige Ergebnisse heraus, um Abstürze zu verhindern
+                // Filtere unvollständige Einträge aus
                 const validItems = itemsArray.filter(item => typeof item.kcal === 'number');
                 
                 if (validItems.length === 0) {
-                    throw new Error('Die Nährwerte konnten nicht korrekt berechnet werden.');
+                    throw new Error('Nährwerte konnten nicht richtig berechnet werden.');
                 }
 
                 return validItems;
 
             } catch (error) {
-                console.error('Groq API Error:', error);
+                console.error('Hugging Face API Error:', error);
                 showToast(`Fehler: ${error.message}`, 'error');
                 return null;
             } finally {
@@ -969,7 +975,7 @@ Eingabe: "${foodDescription}"`;
             voiceBtn.style.display = 'none';
         }
 
-        // ==================== EVENT HANDLERS ====================
+ // ==================== EVENT HANDLERS ====================
         async function handleSubmit() {
             const input = document.getElementById('foodInput').value.trim();
             if (!input) {
@@ -977,9 +983,9 @@ Eingabe: "${foodDescription}"`;
                 return;
             }
 
-            const results = await analyzeFoodWithGroq(input);
+            // Hier rufen wir jetzt die neue Hugging Face Funktion auf!
+            const results = await analyzeFoodWithHuggingFace(input);
             
-            // Wenn Ergebnisse gefunden wurden, iterieren wir durch die Liste
             if (results && results.length > 0) {
                 results.forEach(result => {
                     AppState.addEntry(
