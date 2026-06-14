@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition App (Debug Mode)</title>
+    <title>Nutrition App (Debug v2)</title>
 </head>
 <body>
 
-    <h1>Nutrition App (Mobile Debug)</h1>
+    <h1>Nutrition App (Mobile Debug v2)</h1>
 
     <section>
         <h3>1. API Einstellungen</h3>
@@ -93,10 +93,10 @@
             logList.innerHTML = ''; 
 
             log.forEach(item => {
-                totalKcal += item.kcal;
-                totalProtein += item.protein;
-                totalCarbs += item.carbs;
-                totalFett += item.fett;
+                totalKcal += Number(item.kcal || 0);
+                totalProtein += Number(item.protein || 0);
+                totalCarbs += Number(item.carbs || 0);
+                totalFett += Number(item.fett || 0);
 
                 const li = document.createElement('li');
                 li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${item.kcal} kcal (E:${item.protein}g, K:${item.carbs}g, F:${item.fett}g)`;
@@ -142,7 +142,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "llama3-8b-8192", // Garantiert aktives Groq Modell
+                        model: "llama-3.1-8b-instant", 
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: mealText }
@@ -151,18 +151,17 @@
                     })
                 });
 
-                // DIREKTES FEHLER-FEEDBACK AUF DEM BILDSCHIRM
                 if (!response.ok) {
                     const errorText = await response.text();
-                    alert(`Groq Server Fehler (Status ${response.status}):\n\n${errorText}\n\n-> Überprüfe, ob der API Key korrekt kopiert wurde.`);
-                    throw new Error(`Server Error: ${errorText}`);
+                    alert(`Groq Server Fehler (Status ${response.status}):\n\n${errorText}`);
+                    return;
                 }
 
                 const data = await response.json();
                 
                 if (!data.choices || !data.choices[0]) {
-                    alert("Die KI hat keine gültige Antwort gesendet.");
-                    throw new Error("No choices in response");
+                    alert("Die KI hat keine choices geliefert.");
+                    return;
                 }
 
                 let aiResponseText = data.choices[0].message.content.trim();
@@ -182,10 +181,7 @@
 
             } catch (error) {
                 console.error("Fehler:", error);
-                // JSON-Parse Fehler abfangen (wenn KI doch mal Text statt reinem JSON quatscht)
-                if (error instanceof SyntaxError) {
-                    alert("Fehler beim Verarbeiten der Daten. Die KI hat wahrscheinlich keinen reinen JSON-Code geantwortet. Versuch die Eingabe etwas umzuformulieren.");
-                }
+                alert("Etwas ging schief: " + error.message);
             } finally {
                 document.getElementById('loadingText').style.display = 'none';
                 document.getElementById('submitBtn').disabled = false;
