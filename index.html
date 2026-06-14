@@ -151,14 +151,14 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                // Aktualisiertes, stabiles Modell von Groq
-                model: "llama3-70b-8192", 
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: mealText }
-                ],
-                temperature: 0.1
-            })
+    // HIER GEÄNDERT: Das aktuelle Llama 3.3 Modell nutzen
+    model: "llama-3.3-70b-versatile", 
+    messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: mealText }
+    ],
+    temperature: 0.1
+})
         });
 
         // HIER NEU: Wenn der Server (Groq) einen Fehler wirft, loggen wir die exakte Begründung
