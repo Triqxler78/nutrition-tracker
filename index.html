@@ -714,8 +714,8 @@
                 <button class="modal-close" id="closeSettingsBtn">✕</button>
             </div>
             <div class="form-group">
-                <label for="groqKeyInput">Groq API Key</label>
-                <input type="password" id="groqKeyInput" placeholder="gsk_...">
+                <label for="hfKeyInput">Hugging Face API Token (hf_...)</label>
+                <input type="password" id="hfKeyInput" placeholder="hf_...">
             </div>
             <div class="form-group">
                 <label for="kcalGoalInput">Tages-kcal-Ziel</label>
@@ -742,7 +742,7 @@
     <script>
         // ==================== STATE MANAGEMENT ====================
         const AppState = {
-            apiKey: localStorage.getItem('groqApiKey') || '',
+            apiKey: localStorage.getItem('hfApiKey') || '', // Nutzt jetzt den hfApiKey Speicherort
             kcalGoal: parseInt(localStorage.getItem('kcalGoal')) || 2000,
             history: JSON.parse(localStorage.getItem('kcalHistory')) || [],
             currentDate: new Date().toDateString(),
@@ -788,7 +788,7 @@
             saveSettings(key, goal) {
                 this.apiKey = key;
                 this.kcalGoal = goal;
-                localStorage.setItem('groqApiKey', key);
+                localStorage.setItem('hfApiKey', key);
                 localStorage.setItem('kcalGoal', goal);
             }
         };
@@ -847,10 +847,10 @@
             document.getElementById('headerDate').textContent = dateStr;
         }
 
-// ==================== HUGGING FACE API (100% FREE, NO CARD REQUIRED) ====================
+        // ==================== HUGGING FACE API (100% FREE) ====================
         async function analyzeFoodWithHuggingFace(foodDescription) {
             if (!AppState.apiKey) {
-                showToast('Bitte Hugging Face API Key (hf_...) in den Einstellungen setzen', 'error');
+                showToast('Bitte Hugging Face API Token (hf_...) in den Einstellungen setzen', 'error');
                 return null;
             }
 
@@ -877,7 +877,6 @@ Strukturbeispiel:
 <|eot_id|><|start_header_id|>user<|end_header_id|>
 Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assistant<|end_header_id|>`;
 
-                // Wir nutzen das extrem starke Llama 3.3 70B Modell über die Gratis-Schnittstelle
                 const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct', {
                     method: 'POST',
                     headers: {
@@ -895,16 +894,15 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
                 });
 
                 if (!response.ok) {
-                    throw new Error('Fehler bei der Hugging Face API. Ist der Key korrekt?');
+                    throw new Error('Fehler bei der Hugging Face API. Ist dein hf_ Token korrekt?');
                 }
 
                 const data = await response.json();
                 
-                // Hugging Face gibt ein Array zurück, das generierte Text-Ergebnis extrahieren
                 let generatedText = data[0]?.generated_text || data.generated_text;
                 if (!generatedText) throw new Error('Keine Antwort von der KI erhalten.');
 
-                // Bereinige den Text, falls die KI trotz Verbot Markdown-Code-Blöcke genutzt hat
+                // Bereinigen falls Markdown ausgegeben wurde
                 generatedText = generatedText.replace(/```json/g, '').replace(/```/g, '').trim();
 
                 const content = JSON.parse(generatedText);
@@ -914,7 +912,6 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
                     throw new Error('Konnte keine Lebensmittel erkennen.');
                 }
 
-                // Filtere unvollständige Einträge aus
                 const validItems = itemsArray.filter(item => typeof item.kcal === 'number');
                 
                 if (validItems.length === 0) {
@@ -975,7 +972,7 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
             voiceBtn.style.display = 'none';
         }
 
- // ==================== EVENT HANDLERS ====================
+        // ==================== EVENT HANDLERS ====================
         async function handleSubmit() {
             const input = document.getElementById('foodInput').value.trim();
             if (!input) {
@@ -983,7 +980,7 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
                 return;
             }
 
-            // Hier rufen wir jetzt die neue Hugging Face Funktion auf!
+            // Ruft jetzt zuverlässig Hugging Face auf
             const results = await analyzeFoodWithHuggingFace(input);
             
             if (results && results.length > 0) {
@@ -1053,11 +1050,11 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
         const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        const groqKeyInput = document.getElementById('groqKeyInput');
+        const hfKeyInput = document.getElementById('hfKeyInput');
         const kcalGoalInput = document.getElementById('kcalGoalInput');
 
         settingsBtn.addEventListener('click', () => {
-            groqKeyInput.value = AppState.apiKey;
+            hfKeyInput.value = AppState.apiKey;
             kcalGoalInput.value = AppState.kcalGoal;
             settingsModal.classList.add('active');
         });
@@ -1067,11 +1064,11 @@ Analysiere dieses Essen: "${foodDescription}"<|eot_id|><|start_header_id|>assist
         cancelSettingsBtn.addEventListener('click', closeModal);
 
         saveSettingsBtn.addEventListener('click', () => {
-            const key = groqKeyInput.value.trim();
+            const key = hfKeyInput.value.trim();
             const goal = parseInt(kcalGoalInput.value) || 2000;
 
             if (!key) {
-                showToast('Bitte Groq API Key eingeben', 'error');
+                showToast('Bitte Hugging Face Token eingeben', 'error');
                 return;
             }
 
