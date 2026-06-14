@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Kalorie-Tracker - Progressive Web App mit Groq AI">
+    <title>Kalorie-Tracker</title>
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Kalorie-Tracker%22,%22short_name%22:%22kcal%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%231a1a2e%22,%22theme_color%22:%22%231a1a2e%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2316c784' width='192' height='192'/><text x='96' y='120' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>kcal</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16c784 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .settings-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #16c784;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .header-date {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .progress-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #16c784 0%, #00d4ff 100%);
+            border-radius: 6px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(22, 199, 132, 0.5);
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, #ffa726 0%, #ffb74d 100%);
+            box-shadow: 0 0 10px rgba(255, 167, 38, 0.5);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, #ef5350 0%, #e53935 100%);
+            box-shadow: 0 0 10px rgba(239, 83, 80, 0.5);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        #foodInput {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #foodInput:focus {
+            outline: none;
+            border-color: #16c784;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 12px rgba(22, 199, 132, 0.2);
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16c784 0%, #00d4ff 100%);
+            color: #0f0f1e;
+            flex: 1;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 20px rgba(22, 199, 132, 0.4);
+        }
+
+        .btn-voice {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #00d4ff;
+            width: 44px;
+            padding: 0;
+        }
+
+        .btn-voice:active {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .btn-voice.recording {
+            background: rgba(239, 83, 80, 0.3);
+            border-color: #ef5350;
+            color: #ef5350;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .history-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #16c784;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 24px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid #16c784;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-item-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-item-food {
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .history-item-time {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .history-item-kcal {
+            font-weight: 600;
+            color: #16c784;
+            font-size: 16px;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .history-item-delete {
+            background: rgba(239, 83, 80, 0.2);
+            border: none;
+            color: #ef5350;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .history-item-delete:active {
+            background: rgba(239, 83, 80, 0.4);
+            transform: scale(0.95);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 28px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:active {
+            color: #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #16c784;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #16c784;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 12px rgba(22, 199, 132, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Loading & Status */
+        .loading {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .loading span {
+            width: 4px;
+            height: 4px;
+            background: #16c784;
+            border-radius: 50%;
+            animation: loading 1.4s infinite;
+        }
+
+        .loading span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loading {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 16px;
+            right: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(22, 199, 132, 0.15);
+            border: 1px solid rgba(22, 199, 132, 0.5);
+            color: #16c784;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            animation: toastSlide 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.error {
+            background: rgba(239, 83, 80, 0.15);
+            border-color: rgba(239, 83, 80, 0.5);
+            color: #ef5350;
+        }
+
+        @keyframes toastSlide {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .container {
+                padding: 12px;
+            }
+
+            header {
+                padding: 16px;
+            }
+
+            .input-section, .history-section {
+                padding: 12px;
+            }
+
+            main {
+                gap: 16px;
+            }
+        }
+
+        /* Scrollbar */
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(22, 199, 132, 0.3);
+            border-radius: 2px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(22, 199, 132, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>🔥 Kalorie Tracker</h1>
+                <button class="settings-btn" id="settingsBtn">⚙️</button>
+            </div>
+            <div class="header-date" id="headerDate"></div>
+            <div class="progress-container">
+                <div class="progress-stats">
+                    <span id="progressText">0 kcal gegessen</span>
+                    <span id="remainingText">2000 übrig</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="foodInput" 
+                        placeholder="z.B. '3 Eier' oder 'Apfel'" 
+                        autocomplete="off"
+                    >
+                    <button class="btn btn-voice" id="voiceBtn" title="Spracheingabe">🎤</button>
+                </div>
+                <button class="btn btn-primary" id="submitBtn">Hinzufügen</button>
+            </div>
+
+            <div class="history-section">
+                <div class="history-title">📋 Heute</div>
+                <div id="historyContainer" class="history-empty">Noch nichts hinzugefügt</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Einstellungen</h2>
+                <button class="modal-close" id="closeSettingsBtn">✕</button>
+            </div>
+            <div class="form-group">
+                <label for="groqKeyInput">Groq API Key</label>
+                <input 
+                    type="password" 
+                    id="groqKeyInput" 
+                    placeholder="gsk_..." 
+                >
+            </div>
+            <div class="form-group">
+                <label for="kcalGoalInput">Tages-kcal-Ziel</label>
+                <input 
+                    type="number" 
+                    id="kcalGoalInput" 
+                    placeholder="2000" 
+                    min="500" 
+                    max="10000"
+                >
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSettingsBtn">Abbrechen</button>
+                <button class="btn btn-primary" id="saveSettingsBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE MANAGEMENT ====================
+        const AppState = {
+            apiKey: localStorage.getItem('groqApiKey') || '',
+            kcalGoal: parseInt(localStorage.getItem('kcalGoal')) || 2000,
+            history: JSON.parse(localStorage.getItem('kcalHistory')) || [],
+            currentDate: new Date().toDateString(),
+
+            init() {
+                const storedDate = localStorage.getItem('kcalDate');
+                if (storedDate !== this.currentDate) {
+                    this.history = [];
+                    localStorage.setItem('kcalDate', this.currentDate);
+                    localStorage.setItem('kcalHistory', JSON.stringify(this.history));
+                }
+            },
+
+            addEntry(food, kcal) {
+                this.history.push({
+                    food,
+                    kcal,
+                    time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                });
+                localStorage.setItem('kcalHistory', JSON.stringify(this.history));
+            },
+
+            removeEntry(index) {
+                this.history.splice(index, 1);
+                localStorage.setItem('kcalHistory', JSON.stringify(this.history));
+            },
+
+            getTotalKcal() {
+                return this.history.reduce((sum, entry) => sum + entry.kcal, 0);
+            },
+
+            saveSettings(key, goal) {
+                this.apiKey = key;
+                this.kcalGoal = goal;
+                localStorage.setItem('groqApiKey', key);
+                localStorage.setItem('kcalGoal', goal);
+            }
+        };
+
+        // ==================== UI UPDATES ====================
+        function updateProgressBar() {
+            const total = AppState.getTotalKcal();
+            const percentage = Math.min((total / AppState.kcalGoal) * 100, 100);
+            const remaining = Math.max(AppState.kcalGoal - total, 0);
+
+            document.getElementById('progressText').textContent = `${total} kcal gegessen`;
+            document.getElementById('remainingText').textContent = `${remaining} übrig`;
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+
+            const fillEl = document.getElementById('progressFill');
+            fillEl.classList.remove('warning', 'danger');
+            if (percentage >= 100) {
+                fillEl.classList.add('danger');
+            } else if (percentage >= 80) {
+                fillEl.classList.add('warning');
+            }
+        }
+
+        function updateHistory() {
+            const container = document.getElementById('historyContainer');
+
+            if (AppState.history.length === 0) {
+                container.innerHTML = '<div class="history-empty">Noch nichts hinzugefügt</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="history-list">
+                    ${AppState.history.map((entry, index) => `
+                        <div class="history-item">
+                            <div class="history-item-text">
+                                <div class="history-item-food">${escapeHtml(entry.food)}</div>
+                                <div class="history-item-time">${entry.time}</div>
+                            </div>
+                            <div class="history-item-kcal">+${entry.kcal}</div>
+                            <button class="history-item-delete" onclick="handleDeleteEntry(${index})">🗑️</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function updateHeaderDate() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const dateStr = now.toLocaleDateString('de-DE', options);
+            document.getElementById('headerDate').textContent = dateStr;
+        }
+
+        // ==================== GROQ API INTEGRATION ====================
+        async function analyzeFood(foodDescription) {
+            if (!AppState.apiKey) {
+                showToast('Bitte Groq API Key in den Einstellungen setzen', 'error');
+                return null;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+            submitBtn.disabled = true;
+
+            try {
+                const prompt = `Analysiere die folgende Lebensmittel-Beschreibung und schätze den Kaloriengehalt basierend auf deutschen Supermärkten wie Lidl, Aldi und Rewe. Gib EXAKT ein JSON-Objekt zurück mit den Feldern "food" (deutsche Beschreibung) und "kcal" (geschätzte Kalorien als Zahl).
+
+Eingabe: "${foodDescription}"
+
+WICHTIG: Antworte NUR mit dem JSON, keine zusätzlichen Worte!`;
+
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AppState.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.3,
+                        max_tokens: 200,
+                        response_format: { type: 'json_object' }
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'API Error');
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                const parsed = JSON.parse(content);
+
+                if (!parsed.kcal || typeof parsed.kcal !== 'number') {
+                    throw new Error('Ungültige API-Response');
+                }
+
+                return { food: parsed.food || foodDescription, kcal: Math.round(parsed.kcal) };
+            } catch (error) {
+                console.error('Groq API Error:', error);
+                showToast(`Fehler: ${error.message}`, 'error');
+                return null;
+            } finally {
+                submitBtn.innerHTML = 'Hinzufügen';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ==================== WEB SPEECH API ====================
+        let recognition;
+        const voiceBtn = document.getElementById('voiceBtn');
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'de-DE';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = '🎙️';
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '🎤';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0].transcript)
+                    .join('');
+                document.getElementById('foodInput').value = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                showToast(`Spracherkennung Fehler: ${event.error}`, 'error');
+            };
+
+            voiceBtn.addEventListener('click', () => {
+                if (recognition.running) {
+                    recognition.abort();
+                } else {
+                    document.getElementById('foodInput').value = '';
+                    recognition.start();
+                }
+            });
+        } else {
+            voiceBtn.style.display = 'none';
+        }
+
+        // ==================== EVENT HANDLERS ====================
+        async function handleSubmit() {
+            const input = document.getElementById('foodInput').value.trim();
+            if (!input) {
+                showToast('Bitte Lebensmittel eingeben', 'error');
+                return;
+            }
+
+            const result = await analyzeFood(input);
+            if (result) {
+                AppState.addEntry(result.food, result.kcal);
+                updateHistory();
+                updateProgressBar();
+                document.getElementById('foodInput').value = '';
+                showToast(`✅ ${result.food} (${result.kcal} kcal) hinzugefügt`);
+            }
+        }
+
+        function handleDeleteEntry(index) {
+            AppState.removeEntry(index);
+            updateHistory();
+            updateProgressBar();
+            showToast('Eintrag gelöscht');
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+        document.getElementById('foodInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSubmit();
+        });
+
+        // ==================== SETTINGS MODAL ====================
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const groqKeyInput = document.getElementById('groqKeyInput');
+        const kcalGoalInput = document.getElementById('kcalGoalInput');
+
+        settingsBtn.addEventListener('click', () => {
+            groqKeyInput.value = AppState.apiKey;
+            kcalGoalInput.value = AppState.kcalGoal;
+            settingsModal.classList.add('active');
+        });
+
+        const closeModal = () => settingsModal.classList.remove('active');
+        closeSettingsBtn.addEventListener('click', closeModal);
+        cancelSettingsBtn.addEventListener('click', closeModal);
+
+        saveSettingsBtn.addEventListener('click', () => {
+            const key = groqKeyInput.value.trim();
+            const goal = parseInt(kcalGoalInput.value) || 2000;
+
+            if (!key) {
+                showToast('Bitte Groq API Key eingeben', 'error');
+                return;
+            }
+
+            if (goal < 500 || goal > 10000) {
+                showToast('Ziel muss zwischen 500 und 10000 kcal liegen', 'error');
+                return;
+            }
+
+            AppState.saveSettings(key, goal);
+            updateProgressBar();
+            closeModal();
+            showToast('✅ Einstellungen gespeichert');
+        });
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeModal();
+        });
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('load', () => {
+            AppState.init();
+            updateHeaderDate();
+            updateProgressBar();
+            updateHistory();
+
+            // PWA Installation Prompt
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:text/javascript,').catch(() => {});
+            }
+
+            // Prevent zoom
+            document.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 1) e.preventDefault();
+            }, { passive: false });
+        });
+
+        // Expose for global access
+        window.handleDeleteEntry = handleDeleteEntry;
+    </script>
+</body>
+</html>
