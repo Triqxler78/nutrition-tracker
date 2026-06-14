@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition App (Debug v2)</title>
+    <title>Nutrition App (Debug v3)</title>
 </head>
 <body>
 
-    <h1>Nutrition App (Mobile Debug v2)</h1>
+    <h1>Nutrition App (Mobile Debug v3)</h1>
 
     <section>
         <h3>1. API Einstellungen</h3>
         <input type="password" id="apiKeyInput" placeholder="Groq API Key (gsk_...)">
-        <button onclick="saveApiKey()">Key speichern</button>
+        <button onclick="saveApiKey()">Key保存</button>
     </section>
 
     <hr>
@@ -30,10 +30,10 @@
 
     <section>
         <h3>3. Mahlzeit eingeben</h3>
-        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1 Liter Eiweiß mit 2 Vollkorntoastbrot von Ja!"></textarea>
+        <textarea id="mealInput" rows="4" cols="40" placeholder="Z.B.: 1L Öl und 1L Ei"></textarea>
         <br><br>
         <button id="submitBtn" onclick="analyzeMeal()">Mahlzeit analysieren</button>
-        <p id="loadingText" style="display:none; color: blue;">KI rechnet... Bitte warten...</p>
+        <p id="loadingText" style="display:none; color: blue;">KI rechnet präzise... Bitte warten...</p>
     </section>
 
     <hr>
@@ -93,13 +93,13 @@
             logList.innerHTML = ''; 
 
             log.forEach(item => {
-                totalKcal += Number(item.kcal || 0);
-                totalProtein += Number(item.protein || 0);
-                totalCarbs += Number(item.carbs || 0);
-                totalFett += Number(item.fett || 0);
+                totalKcal += Math.round(Number(item.kcal || 0));
+                totalProtein += Math.round(Number(item.protein || 0));
+                totalCarbs += Math.round(Number(item.carbs || 0));
+                totalFett += Math.round(Number(item.fett || 0));
 
                 const li = document.createElement('li');
-                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${item.kcal} kcal (E:${item.protein}g, K:${item.carbs}g, F:${item.fett}g)`;
+                li.innerHTML = `[${item.time}] <b>${item.name}</b>: ${Math.round(item.kcal)} kcal (E:${Math.round(item.protein)}g, K:${Math.round(item.carbs)}g, F:${Math.round(item.fett)}g)`;
                 logList.appendChild(li);
             });
 
@@ -110,84 +110,84 @@
             document.getElementById('totalFett').innerText = totalFett;
         }
 
-async function analyzeMeal() {
-    const apiKey = localStorage.getItem('groq_api_key');
-    if(!apiKey) {
-        alert("Bitte gib zuerst deinen Groq API Key oben ein und klicke auf Speichern!");
-        return;
-    }
+        async function analyzeMeal() {
+            const apiKey = localStorage.getItem('groq_api_key');
+            if(!apiKey) {
+                alert("Bitte gib zuerst deinen Groq API Key oben ein!");
+                return;
+            }
 
-    const mealText = document.getElementById('mealInput').value.trim();
-    if(!mealText) return;
+            const mealText = document.getElementById('mealInput').value.trim();
+            if(!mealText) return;
 
-    document.getElementById('loadingText').style.display = 'block';
-    document.getElementById('submitBtn').disabled = true;
+            document.getElementById('loadingText').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
 
-    const now = new Date();
-    const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            const now = new Date();
+            const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-    const systemPrompt = `Du bist ein Ernährungsberater für den deutschen Markt. 
-    Analysiere den Text und schätze die Nährwerte basierend auf typischen Werten deutscher Supermärkte (z.B. Ja!, Gut&Günstig).
-    Antworte AUSSCHLIESSLICH mit einem validen JSON-Array. Kein Text drumherum.
-    Format-Beispiel:
-    [
-      {"name": "1L Eiweiß (Milbona)", "kcal": 500, "protein": 110, "carbs": 10, "fett": 2}
-    ]`;
+            // Messerscharfer System-Prompt für echtes Rechnen
+            const systemPrompt = `Du bist ein mathematisch präziser Ernährungsrechner für den deutschen Markt.
+            Analysiere die Eingabe des Nutzers. Berechne die exakten Nährwerte basierend auf der GENANNTEN Menge.
+            WICHTIG: Rechne das Volumen/Gewicht korrekt hoch! 1 Liter Öl wiegt ca. 900g und besteht zu 100% aus Fett (ca. 8000-9000 kcal!). 1 Liter Vollei entspricht ca. 20 großen Eiern (ca. 1400 kcal!). Sei extrem realistisch und nutze typische Werte deutscher Supermarkt-Eigenmarken (Ja!, Gut&Günstig, Milbona).
+            
+            Du MUSST im folgenden JSON-Format antworten (ein Objekt mit dem Key "items"):
+            {
+              "items": [
+                {"name": "Exakter Name + Marke/Eigenmarke", "kcal": 8100, "protein": 0, "carbs": 0, "fett": 900}
+              ]
+            }`;
 
-    try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                // HIER GEÄNDERT: Das Modell auf die aktive Version aktualisiert
-                model: "llama-3.1-8b-instant", 
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: mealText }
-                ],
-                temperature: 0.1
-            })
-        });
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile", // Das smarte 70B Modell
+                        response_format: { "type": "json_object" }, // Zwingt Groq zu sauberem JSON
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: mealText }
+                        ],
+                        temperature: 0.1
+                    })
+                });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            alert(`Groq Server Fehler (Status ${response.status}):\n\n${errorText}`);
-            return;
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    alert(`Fehler: ${errorText}`);
+                    return;
+                }
+
+                const data = await response.json();
+                const aiResponseText = data.choices[0].message.content.trim();
+                
+                // JSON parsen
+                const parsedData = JSON.parse(aiResponseText);
+                const parsedItems = parsedData.items || [];
+
+                let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
+
+                parsedItems.forEach(item => {
+                    item.time = currentTimeStr;
+                    currentLog.push(item);
+                });
+
+                localStorage.setItem('meal_log', JSON.stringify(currentLog));
+                updateUI();
+                document.getElementById('mealInput').value = '';
+
+            } catch (error) {
+                console.error("Fehler:", error);
+                alert("Fehler beim Verarbeiten: " + error.message);
+            } finally {
+                document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+            }
         }
-
-        const data = await response.json();
-        
-        if (!data.choices || !data.choices[0]) {
-            alert("Die KI hat keine choices geliefert.");
-            return;
-        }
-
-        let aiResponseText = data.choices[0].message.content.trim();
-        aiResponseText = aiResponseText.replace(/```json|```/g, '');
-
-        const parsedItems = JSON.parse(aiResponseText);
-        let currentLog = JSON.parse(localStorage.getItem('meal_log')) || [];
-
-        parsedItems.forEach(item => {
-            item.time = currentTimeStr;
-            currentLog.push(item);
-        });
-
-        localStorage.setItem('meal_log', JSON.stringify(currentLog));
-        updateUI();
-        document.getElementById('mealInput').value = '';
-
-    } catch (error) {
-        console.error("Fehler:", error);
-        alert("Etwas ging schief: " + error.message);
-    } finally {
-        document.getElementById('loadingText').style.display = 'none';
-        document.getElementById('submitBtn').disabled = false;
-    }
-}
     </script>
 </body>
 </html>
