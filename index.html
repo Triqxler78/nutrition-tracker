@@ -9,16 +9,16 @@
     <style>
         /* --- CSS & Premium Design --- */
         :root {
-            --primary: #10B981; /* Premium Grün */
+            --primary: #10B981; 
             --primary-hover: #059669;
             --bg-color: #F3F4F6;
             --card-bg: #FFFFFF;
             --text-main: #1F2937;
             --text-muted: #6B7280;
-            --protein-color: #3B82F6; /* Blau */
-            --carbs-color: #F59E0B;   /* Orange */
-            --fat-color: #EF4444;     /* Rot */
-            --voice-color: #3B82F6;   /* Blau für Mikrofon */
+            --protein-color: #3B82F6; 
+            --carbs-color: #F59E0B;   
+            --fat-color: #EF4444;     
+            --voice-color: #3B82F6;   
             --voice-hover: #2563EB;
         }
 
@@ -184,33 +184,46 @@
         .settings-content { display: none; margin-top: 15px; }
         .toggle-btn { font-size: 12px; color: var(--primary); cursor: pointer; text-decoration: underline; }
 
-        /* Edit Mode Styles */
+        /* Edit Mode Layout optimiert */
         .edit-layout {
             display: flex;
             flex-direction: column;
             gap: 8px;
             background: #f0fdf4;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             border: 1px dashed var(--primary);
         }
         .edit-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+        .edit-grid div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .edit-grid label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 2px;
         }
         .edit-grid input {
-            padding: 6px;
-            font-size: 12px;
+            padding: 6px 2px;
+            font-size: 11px;
             text-align: center;
             border-radius: 6px;
+            border: 1px solid #D1D5DB;
         }
         .edit-actions {
             display: flex;
             gap: 6px;
+            margin-top: 5px;
         }
         .edit-actions button {
-            padding: 6px;
+            padding: 8px;
             font-size: 12px;
             border-radius: 6px;
         }
@@ -225,6 +238,7 @@
             <p>Dein smarter KI-Ernährungscoach (Groq Ultra-Speed)</p>
         </div>
 
+        <!-- DASHBOARD -->
         <div class="card">
             <div class="card-title">
                 Heutige Übersicht
@@ -270,6 +284,7 @@
             </div>
         </div>
 
+        <!-- TRACKING AREA -->
         <div class="card">
             <div class="card-title">Mahlzeit tracken</div>
             <textarea id="mealInput" rows="3" placeholder="Z.B.: 1 Apfel, 2 Vollkorntoast und 1 Ei..."></textarea>
@@ -278,6 +293,7 @@
             <button id="submitBtn" onclick="analyzeMeal()">Smart Scan ✨</button>
         </div>
 
+        <!-- VERLAUF (LOG) -->
         <div class="card">
             <div class="card-title">
                 Verlauf
@@ -298,7 +314,7 @@
             updateUI();
         };
 
-        // --- SPRACHEINGABE FIX FÜR IPHONE / SAFARI ---
+        // --- SPRACHEINGABE FÜR IPHONE ---
         function startVoiceInput() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
@@ -307,9 +323,8 @@
                 return;
             }
 
-            // Sicherheits-Check für iOS: HTTPS erzwingen
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-                alert("WICHTIG FÜR IPHONE:\nDas Mikrofon ist aus Datenschutzgründen nur erlaubt, wenn die Seite über eine sichere Verbindung (HTTPS) läuft!\n\nBitte lade den Code auf GitHub Pages hoch und öffne die HTTPS-Adresse.");
+                alert("WICHTIG FÜR IPHONE:\nDas Mikrofon ist aus Datenschutzgründen nur erlaubt, wenn die Seite über eine sichere Verbindung (HTTPS) läuft!\n\nBitte lade den Code auf GitHub Pages hoch.");
                 return;
             }
 
@@ -371,13 +386,14 @@
             const item = log[index];
 
             // Neue Werte aus den Inputs auslesen
+            const newAmount = document.getElementById(`editAmount-${index}`).value.trim();
             const newKcal = Math.round(Number(document.getElementById(`editKcal-${index}`).value));
             const newProtein = Number(document.getElementById(`editProtein-${index}`).value);
             const newCarbs = Number(document.getElementById(`editCarbs-${index}`).value);
             const newFat = Number(document.getElementById(`editFat-${index}`).value);
 
             // 1. Im heutigen Verlauf updaten
-            item.originalName = item.originalName || item.name; // Falls noch nicht gesetzt, alten Namen merken
+            item.amount = newAmount;
             item.kcal = newKcal;
             item.protein = newProtein;
             item.carbs = newCarbs;
@@ -387,11 +403,12 @@
             log[index] = item;
             localStorage.setItem('meal_log', JSON.stringify(log));
 
-            // 2. Im Gedächtnis-Wörterbuch (Wissensdatenbank) für die Zukunft speichern
+            // 2. Im Gedächtnis inklusive MENGE für den Dreisatz speichern!
             const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
             const foodKey = item.name.toLowerCase().trim();
             
             dictionary[foodKey] = {
+                amount: newAmount, // Hier merken wir uns jetzt ob es für '100g' oder '1 Stück' gilt!
                 kcal: newKcal,
                 protein: newProtein,
                 carbs: newCarbs,
@@ -417,15 +434,15 @@
                 const li = document.createElement('li');
 
                 if (item.isEditing) {
-                    // Bearbeitungs-Modus UI
                     li.innerHTML = `
                         <div class="edit-layout">
                             <strong style="font-size:13px; color:var(--primary)">${item.name} anpassen:</strong>
                             <div class="edit-grid">
-                                <div><label style="font-size:10px">kcal</label><input type="number" id="editKcal-${index}" value="${Math.round(item.kcal)}"></div>
-                                <div><label style="font-size:10px">Eiweiß</label><input type="number" step="0.1" id="editProtein-${index}" value="${item.protein}"></div>
-                                <div><label style="font-size:10px">Kohlenh.</label><input type="number" step="0.1" id="editCarbs-${index}" value="${item.carbs}"></div>
-                                <div><label style="font-size:10px">Fett</label><input type="number" step="0.1" id="editFat-${index}" value="${item.fett}"></div>
+                                <div><label>Menge</label><input type="text" id="editAmount-${index}" value="${item.amount || '100g'}"></div>
+                                <div><label>kcal</label><input type="number" id="editKcal-${index}" value="${Math.round(item.kcal)}"></div>
+                                <div><label>Eiweiß</label><input type="number" step="0.1" id="editProtein-${index}" value="${item.protein}"></div>
+                                <div><label>Kohlenh.</label><input type="number" step="0.1" id="editCarbs-${index}" value="${item.carbs}"></div>
+                                <div><label>Fett</label><input type="number" step="0.1" id="editFat-${index}" value="${item.fett}"></div>
                             </div>
                             <div class="edit-actions">
                                 <button onclick="saveEdit(${index})" style="background-color: var(--primary);">Speichern & Merken 💾</button>
@@ -434,7 +451,6 @@
                         </div>
                     `;
                 } else {
-                    // Normaler Anzeige-Modus UI
                     li.innerHTML = `
                         <div class="meal-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -520,11 +536,11 @@
             }
         }
 
-        // --- GROQ KI LOGIK MIT LERNFUNKTION ---
+        // --- GROQ KI LOGIK MIT INTELLIGENTEM DREISATZ-SPEICHER ---
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
             if(!apiKey) {
-                alert("Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen GROQ Cloud API Key (gsk_...)!");
+                alert("Bitte klappe zuerst die Einstellungen ⚙️ aus und hinterlege deinen GROQ Cloud API Key!");
                 return;
             }
 
@@ -538,13 +554,13 @@
             const now = new Date();
             const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-            // Hol deine gespeicherten Korrekturen aus dem Gedächtnis
             const customDictionary = localStorage.getItem('food_dictionary') || '{}';
 
             const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten Menge zu schätzen.
 
-WICHTIGE BENUTZERREGELELN (Lern-Modus):
-Der Benutzer hat in der Vergangenheit manuelle Korrekturen vorgenommen. Wenn das eingegebene Lebensmittel mit einem Eintrag aus dieser JSON-Liste übereinstimmt, verwende UNBEDINGT diese Nährwerte als Basis und skaliere sie entsprechend der Menge hoch oder runter:
+WICHTIGE BENUTZERREGELN (Lern-Modus):
+Der Benutzer hat in der Vergangenheit manuelle Korrekturen vorgenommen. In der folgenden JSON-Liste siehst du Lebensmittel mit den Nährwerten für eine ganz bestimmte Basismenge ("amount").
+Wenn das eingegebene Lebensmittel mit einem Eintrag aus dieser Liste übereinstimmt, verwende diesen Eintrag als absolut exakte Referenzbasis und berechne (skaliere) die neuen Nährwerte per Dreisatz exakt proportional auf die vom Benutzer aktuell geforderte Menge hoch oder runter!
 ${customDictionary}
 
 Allgemeine Schätz-Regeln:
@@ -566,7 +582,7 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
       "protein": 30,
       "carbs": 10,
       "fett": 1
-                }
+    }
   ]
 }`;
 
