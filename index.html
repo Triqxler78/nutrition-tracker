@@ -605,35 +605,36 @@
             border-color: var(--accent-blue);
         }
 
-        /* --- EDITING INLINE FORM --- */
-        .inline-edit-box {
-            background: var(--ios-card);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px dashed var(--accent-blue);
-            margin: 8px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-        }
+/* --- EDITING INLINE FORM --- */
+.inline-edit-box {
+    background: var(--ios-card);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px dashed var(--accent-blue);
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
 
-        .inline-edit-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
+.inline-edit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px; /* Etwas verkleinert von 8px auf 6px für mehr Platz */
+}
 
-        .inline-edit-box input {
-            padding: 8px;
-            background: var(--ios-bg);
-            color: var(--ios-text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            text-align: center;
-        }
-
+.inline-edit-box input {
+    padding: 6px 4px; /* Padding reduziert, damit der Text reinpasst */
+    background: var(--ios-bg);
+    color: var(--ios-text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 13px; /* Schrift minimal kleiner gemacht (vorher 14px) */
+    text-align: center;
+    width: 100%; /* Stellt sicher, dass das Feld im Grid bleibt */
+    min-width: 0; /* DER WICHTIGSTE FIX: Zwingt das Feld, kleiner zu werden, wenn der Platz fehlt */
+}
         /* --- HELPER STYLES --- */
         .empty-slot-text {
             font-size: 13px;
