@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>NutriTrack Premium — iOS Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* --- Premium iOS Design System --- */
+        /* --- Premium iOS Design System (Light Mode Defaults) --- */
         :root {
             --ios-bg: #F2F2F7;
             --ios-card: #FFFFFF;
@@ -33,6 +33,26 @@
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
+        /* --- AUTOMATISCHER DARKMODE FÜR OLED --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ios-bg: #000000;         /* Tiefschwarz für OLED */
+                --ios-card: #1C1C1E;       /* Dunkelgrau für Karten */
+                --ios-text-main: #FFFFFF;
+                --ios-text-muted: #8E8E93;
+                --border-color: #38383A;
+                --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+                --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+                --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+            .meal-slot-content {
+                background: #121212 !important; /* Dunklerer HG für aufgeklappte Listen */
+            }
+            .date-switcher {
+                background: rgba(118, 118, 128, 0.24) !important;
+            }
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,31 +62,25 @@
         }
 
         body {
-    /* 1. Darkmode (Tiefschwarz für OLED-Displays) */
-    background-color: #000000;
-    color: #f5f5f7; /* Leichtes Off-White, das schont die Augen */
-
-    /* 2. Automatischer iPhone-Rand + Extra Komfort-Abstand */
-    padding-top: calc(env(safe-area-inset-top) + 20px);
-    padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
-    padding-left: calc(env(safe-area-inset-left) + 16px);
-    padding-right: calc(env(safe-area-inset-right) + 16px);
-
-    /* Sorgt dafür, dass das Padding das Layout nicht zerschießt */
-    box-sizing: border-box; 
-    
-    /* Typischer, cleaner Apple-Schriftstil */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+            background-color: var(--ios-bg);
+            color: var(--ios-text-main);
+            /* Automatischer iPhone-Rand */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            overflow-x: hidden; /* Verhindert Wischen zur Seite / Out of screen Bug */
+            width: 100vw;
+        }
 
         .app-container {
             width: 100%;
             max-width: 480px;
+            margin: 0 auto; /* Zentriert auf größeren Bildschirmen */
             display: flex;
             flex-direction: column;
             gap: 20px;
-            padding-top: 20px;
-            padding-bottom: 40px;
+            padding: 20px 16px 40px 16px; /* FIX: Fester Abstand zum Displayrand hinzugefügt */
         }
 
         /* --- CALENDAR NAVIGATION HEADER --- */
@@ -107,8 +121,8 @@
             transition: all 0.2s;
         }
 
-        .date-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
+        .date-btn:active {
+            background: rgba(128, 128, 128, 0.3);
         }
 
         .date-display {
@@ -164,9 +178,7 @@
             margin-bottom: 24px;
         }
 
-        .stat-column {
-            text-align: center;
-        }
+        .stat-column { text-align: center; }
 
         .stat-value {
             font-size: 22px;
@@ -241,13 +253,8 @@
             font-weight: 600;
         }
 
-        .macro-name {
-            color: var(--ios-text-muted);
-        }
-
-        .macro-numbers {
-            color: var(--ios-text-main);
-        }
+        .macro-name { color: var(--ios-text-muted); }
+        .macro-numbers { color: var(--ios-text-main); }
 
         .macro-progress-bg {
             height: 8px;
@@ -281,7 +288,6 @@
             gap: 8px;
         }
 
-        /* Category Selector Pills */
         .category-pill-box {
             display: flex;
             gap: 8px;
@@ -290,9 +296,7 @@
             margin-bottom: 12px;
             scrollbar-width: none;
         }
-        .category-pill-box::-webkit-scrollbar {
-            display: none;
-        }
+        .category-pill-box::-webkit-scrollbar { display: none; }
 
         .category-pill {
             background: var(--ios-bg);
@@ -319,6 +323,7 @@
             width: 100%;
             border: 1px solid var(--border-color);
             background: var(--ios-bg);
+            color: var(--ios-text-main);
             border-radius: 16px;
             padding: 14px;
             font-size: 15px;
@@ -329,7 +334,6 @@
 
         textarea:focus {
             border-color: var(--accent-blue);
-            background: #FFFFFF;
         }
 
         .action-row {
@@ -356,18 +360,10 @@
             transition: all 0.2s;
         }
 
-        .btn-ios:active {
-            transform: scale(0.97);
-            opacity: 0.9;
-        }
+        .btn-ios:active { transform: scale(0.97); opacity: 0.9; }
+        .btn-ios:disabled { background: var(--ios-text-light); box-shadow: none; cursor: not-allowed; }
 
-        .btn-ios:disabled {
-            background: var(--ios-text-light);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        /* --- MEAL ACCORDION SLOTS (iOS-Style) --- */
+        /* --- MEAL ACCORDION SLOTS --- */
         .slots-container {
             display: flex;
             flex-direction: column;
@@ -391,11 +387,7 @@
             user-select: none;
         }
 
-        .meal-slot-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .meal-slot-header-left { display: flex; align-items: center; gap: 14px; }
 
         .meal-slot-icon-wrapper {
             width: 44px;
@@ -407,28 +399,14 @@
             font-size: 20px;
         }
 
-        /* Colors for different slots */
         .slot-frühstück { background-color: rgba(90, 200, 250, 0.12); color: var(--accent-teal); }
         .slot-mittagessen { background-color: rgba(255, 149, 0, 0.12); color: var(--accent-orange); }
         .slot-abendessen { background-color: rgba(52, 199, 89, 0.12); color: var(--primary); }
         .slot-snacks { background-color: rgba(255, 59, 48, 0.12); color: var(--accent-red); }
 
-        .meal-slot-title {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .meal-slot-subtitle {
-            font-size: 12px;
-            color: var(--ios-text-muted);
-            margin-top: 1px;
-        }
-
-        .meal-slot-header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .meal-slot-title { font-size: 17px; font-weight: 600; }
+        .meal-slot-subtitle { font-size: 12px; color: var(--ios-text-muted); margin-top: 1px; }
+        .meal-slot-header-right { display: flex; align-items: center; gap: 12px; }
 
         .meal-slot-kcal-badge {
             font-size: 15px;
@@ -442,11 +420,8 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .plus-circle-btn:hover {
-            transform: scale(1.1);
-        }
+        .plus-circle-btn:active { transform: scale(0.9); }
 
-        /* Expanded Item List Content */
         .meal-slot-content {
             border-top: 1px solid var(--border-color);
             background: #FAFAFC;
@@ -455,54 +430,24 @@
             padding: 8px 16px;
         }
 
-        .meal-slot-card.expanded .meal-slot-content {
-            display: flex;
-        }
+        .meal-slot-card.expanded .meal-slot-content { display: flex; }
 
         .food-item-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
+            border-bottom: 1px solid var(--border-color);
         }
-        .food-item-row:last-child {
-            border-bottom: none;
-        }
+        .food-item-row:last-child { border-bottom: none; }
 
-        .food-details {
-            flex: 1;
-        }
+        .food-details { flex: 1; }
+        .food-title { font-size: 15px; font-weight: 600; }
+        .food-subinfo { font-size: 12px; color: var(--ios-text-muted); margin-top: 2px; display: flex; gap: 8px; }
 
-        .food-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .food-subinfo {
-            font-size: 12px;
-            color: var(--ios-text-muted);
-            margin-top: 2px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .food-row-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .food-kcal {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .food-actions {
-            display: flex;
-            gap: 8px;
-            font-size: 16px;
-        }
+        .food-row-right { display: flex; align-items: center; gap: 14px; }
+        .food-kcal { font-size: 15px; font-weight: 600; }
+        .food-actions { display: flex; gap: 8px; font-size: 16px; }
 
         .food-action-icon {
             cursor: pointer;
@@ -512,25 +457,18 @@
         }
         .food-action-icon.edit { color: var(--accent-blue); }
         .food-action-icon.delete { color: var(--accent-red); }
-        .food-action-icon:hover { background: rgba(0,0,0,0.05); }
 
-        /* --- SETTINGS AREA (MODAL STYLE) --- */
+        /* --- SETTINGS AREA --- */
         .settings-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4);
             z-index: 999;
             display: none;
             justify-content: center;
             align-items: flex-end;
         }
-
-        .settings-overlay.show {
-            display: flex;
-        }
+        .settings-overlay.show { display: flex; }
 
         .settings-sheet {
             background: var(--ios-card);
@@ -555,10 +493,7 @@
             margin-bottom: 20px;
         }
 
-        .input-group-ios {
-            margin-bottom: 16px;
-        }
-
+        .input-group-ios { margin-bottom: 16px; }
         .input-group-ios label {
             font-size: 13px;
             color: var(--ios-text-muted);
@@ -566,51 +501,62 @@
             display: block;
             margin-bottom: 6px;
             text-transform: uppercase;
-            padding-left: 4px;
         }
-
         .input-group-ios input {
             width: 100%;
             padding: 12px 14px;
             background: var(--ios-bg);
+            color: var(--ios-text-main);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             font-size: 15px;
             outline: none;
         }
+        .input-group-ios input:focus { border-color: var(--accent-blue); }
 
-        .input-group-ios input:focus {
-            border-color: var(--accent-blue);
-        }
-
-        /* --- EDITING INLINE FORM --- */
+        /* --- EDITING INLINE FORM (MIT BESTÄTIGEN-BUTTON) --- */
         .inline-edit-box {
-            background: var(--ios-card);
+            background: var(--ios-bg);
             border-radius: 12px;
             padding: 12px;
-            border: 1px dashed var(--accent-blue);
+            border: 1px solid var(--accent-blue);
             margin: 8px 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             width: 100%;
         }
 
         .inline-edit-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
         }
 
-        .inline-edit-box input {
-            padding: 6px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 13px;
+        .inline-edit-box label {
+            font-size: 10px;
+            color: var(--ios-text-muted);
             text-align: center;
+            display: block;
+            margin-bottom: 2px;
         }
 
-        /* --- HELPER STYLES --- */
+        .inline-edit-box input {
+            width: 100%;
+            padding: 8px;
+            background: var(--ios-card);
+            color: var(--ios-text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .inline-edit-box input.title-input {
+            grid-column: span 4;
+            text-align: left;
+        }
+
         .empty-slot-text {
             font-size: 13px;
             color: var(--ios-text-muted);
@@ -624,7 +570,6 @@
 
     <div class="app-container">
         
-        <!-- TOP HEADER & DATE SWITCHER -->
         <div class="header-nav">
             <h1>Heute</h1>
             <div class="top-actions">
@@ -637,7 +582,6 @@
             </div>
         </div>
 
-        <!-- MAIN DASHBOARD CARD -->
         <div class="dashboard-card">
             <div class="main-stats-grid">
                 <div class="stat-column">
@@ -645,7 +589,6 @@
                     <div class="stat-label">Gegessen</div>
                 </div>
                 
-                <!-- Circular Indicator -->
                 <div class="progress-ring-container">
                     <svg width="150" height="150">
                         <circle stroke="var(--border-color)" stroke-width="10" fill="transparent" r="64" cx="75" cy="75"/>
@@ -663,9 +606,7 @@
                 </div>
             </div>
 
-            <!-- Macro Progress Sub-bars -->
             <div class="macro-bars-container">
-                <!-- Kohlenhydrate -->
                 <div class="macro-bar-row">
                     <div class="macro-bar-header">
                         <span class="macro-name">Kohlenhydrate</span>
@@ -675,7 +616,6 @@
                         <div class="macro-progress-fill" id="barCarbs" style="background-color: var(--carbs-color);"></div>
                     </div>
                 </div>
-                <!-- Eiweiß -->
                 <div class="macro-bar-row">
                     <div class="macro-bar-header">
                         <span class="macro-name">Eiweiß</span>
@@ -685,7 +625,6 @@
                         <div class="macro-progress-fill" id="barProtein" style="background-color: var(--protein-color);"></div>
                     </div>
                 </div>
-                <!-- Fett -->
                 <div class="macro-bar-row">
                     <div class="macro-bar-header">
                         <span class="macro-name">Fett</span>
@@ -698,11 +637,9 @@
             </div>
         </div>
 
-        <!-- TRACKER CARD -->
         <div class="tracker-card">
             <div class="section-title-ios"><i class="fas fa-sparkles" style="color: var(--accent-orange);"></i> Mahlzeit tracken</div>
             
-            <!-- Category pills row -->
             <div class="category-pill-box">
                 <button class="category-pill active" onclick="selectCategory('Frühstück', this)">🥣 Frühstück</button>
                 <button class="category-pill" onclick="selectCategory('Mittagessen', this)">🥪 Mittagessen</button>
@@ -719,10 +656,8 @@
             </div>
         </div>
 
-        <!-- MEAL ACCORDION SLOTS (iOS Breakdown style) -->
         <div class="slots-container">
             
-            <!-- Frühstück Slot -->
             <div class="meal-slot-card" id="slotCard-Frühstück">
                 <div class="meal-slot-header" onclick="toggleSlotExpansion('Frühstück')">
                     <div class="meal-slot-header-left">
@@ -740,7 +675,6 @@
                 <div class="meal-slot-content" id="slotContent-Frühstück"></div>
             </div>
 
-            <!-- Mittagessen Slot -->
             <div class="meal-slot-card" id="slotCard-Mittagessen">
                 <div class="meal-slot-header" onclick="toggleSlotExpansion('Mittagessen')">
                     <div class="meal-slot-header-left">
@@ -758,7 +692,6 @@
                 <div class="meal-slot-content" id="slotContent-Mittagessen"></div>
             </div>
 
-            <!-- Abendessen Slot -->
             <div class="meal-slot-card" id="slotCard-Abendessen">
                 <div class="meal-slot-header" onclick="toggleSlotExpansion('Abendessen')">
                     <div class="meal-slot-header-left">
@@ -776,7 +709,6 @@
                 <div class="meal-slot-content" id="slotContent-Abendessen"></div>
             </div>
 
-            <!-- Snacks Slot -->
             <div class="meal-slot-card" id="slotCard-Snacks">
                 <div class="meal-slot-header" onclick="toggleSlotExpansion('Snacks')">
                     <div class="meal-slot-header-left">
@@ -798,7 +730,6 @@
 
     </div>
 
-    <!-- SETTINGS HALF-SHEET COMPONENT -->
     <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()">
         <div class="settings-sheet" onclick="event.stopPropagation()">
             <div class="settings-header">
@@ -826,17 +757,20 @@
     </div>
 
     <script>
-        // Global State Architecture supporting full date tracking
+        // --- Globale Variablen ---
         let activeCategory = 'Frühstück';
         let DEFAULT_GOAL = 2000;
-        let viewedDate = new Date(); // Local tracking date context
+        let viewedDate = new Date();
+        let editingMealId = null;
 
+        // --- Init ---
         window.onload = function() {
             migrateOldSchema();
             loadSettings();
             updateUI();
         };
 
+        // --- Datums-Logik ---
         function getFormattedDateKey(dateObj) {
             return dateObj.toISOString().split('T')[0];
         }
@@ -854,10 +788,12 @@
 
         function changeDate(daysOffset) {
             viewedDate.setDate(viewedDate.getDate() + daysOffset);
+            document.querySelector('.header-nav h1').innerText = getHumanReadableDateLabel(viewedDate);
+            document.getElementById('dateLabel').innerText = viewedDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
             updateUI();
         }
 
-        // Seamless migration path for V1 users so no data is lost
+        // --- Datenbank & Migration ---
         function migrateOldSchema() {
             const oldLog = localStorage.getItem('meal_log');
             if (oldLog) {
@@ -874,7 +810,7 @@
                         });
                         localStorage.setItem('meal_log_v2', JSON.stringify(database));
                     }
-                    localStorage.removeItem('meal_log'); // clear out legacy item cleanly
+                    localStorage.removeItem('meal_log');
                 } catch(e) { console.error("Migration error:", e); }
             }
         }
@@ -893,8 +829,10 @@
             let database = JSON.parse(localStorage.getItem('meal_log_v2')) || {};
             database[dateKey] = dayDataObj;
             localStorage.setItem('meal_log_v2', JSON.stringify(database));
+            updateUI();
         }
 
+        // --- UI Steuerung ---
         function selectCategory(categoryName, element) {
             activeCategory = categoryName;
             document.querySelectorAll('.category-pill').forEach(btn => btn.classList.remove('active'));
@@ -908,7 +846,12 @@
                 else btn.classList.remove('active');
             });
             document.getElementById('mealInput').focus();
-            document.getElementById('mealInput').scrollIntoView({ behavior: 'smooth' });
+            
+            // Wenn der Slot noch nicht offen ist, öffne ihn
+            const card = document.getElementById(`slotCard-${categoryName}`);
+            if(!card.classList.contains('expanded')) {
+                toggleSlotExpansion(categoryName);
+            }
         }
 
         function toggleSlotExpansion(category) {
@@ -916,297 +859,219 @@
             card.classList.toggle('expanded');
         }
 
-        function promptBurnedCalories() {
-            const currentData = getDayData();
-            const val = prompt("Verbrannte Kalorien (Aktivitäten/Sport) hinzufügen:", currentData.burned || 0);
-            if (val !== null) {
-                const parsedNum = Math.max(0, parseInt(val) || 0);
-                currentData.burned = parsedNum;
-                saveDayData(currentData);
-                updateUI();
+        function openSettings() { document.getElementById('settingsOverlay').classList.add('show'); }
+        function closeSettings() { document.getElementById('settingsOverlay').classList.remove('show'); }
+        
+        function loadSettings() {
+            const savedGoal = localStorage.getItem('daily_goal');
+            const savedKey = localStorage.getItem('groq_api_key');
+            if(savedGoal) {
+                DEFAULT_GOAL = parseInt(savedGoal);
+                document.getElementById('goalInput').value = DEFAULT_GOAL;
             }
-        }
-
-        // --- CORE UI SYNCHRONIZATION ---
-        function updateUI() {
-            const dayData = getDayData();
-            const meals = dayData.meals || [];
-            const burned = dayData.burned || 0;
-            
-            // Dynamic Label Update
-            const dateKey = getFormattedDateKey(viewedDate);
-            document.getElementById('dateLabel').innerText = getHumanReadableDateLabel(viewedDate);
-            document.querySelector('.header-nav h1').innerText = getHumanReadableDateLabel(viewedDate);
-
-            // Dynamically calculate Macro Targets proportional to current target kcal
-            const targetCarbs = Math.round((DEFAULT_GOAL * 0.50) / 4);
-            const targetProtein = Math.round((DEFAULT_GOAL * 0.25) / 4);
-            const targetFat = Math.round((DEFAULT_GOAL * 0.25) / 9);
-
-            document.getElementById('macroCarbsTarget').innerText = targetCarbs;
-            document.getElementById('macroProteinTarget').innerText = targetProtein;
-            document.getElementById('macroFatTarget').innerText = targetFat;
-
-            // Slot breakdowns
-            const slotTotals = {
-                'Frühstück': { kcal: 0, itemsCount: 0, html: '' },
-                'Mittagessen': { kcal: 0, itemsCount: 0, html: '' },
-                'Abendessen': { kcal: 0, itemsCount: 0, html: '' },
-                'Snacks': { kcal: 0, itemsCount: 0, html: '' }
-            };
-
-            let aggregateKcal = 0, aggregateProtein = 0, aggregateCarbs = 0, aggregateFat = 0;
-
-            meals.forEach((item, index) => {
-                const itemKcal = Math.round(Number(item.kcal || 0));
-                const itemProtein = Number(item.protein || 0);
-                const itemCarbs = Number(item.carbs || 0);
-                const itemFat = Number(item.fett || 0);
-                const cat = item.category || 'Snacks';
-
-                aggregateKcal += itemKcal;
-                aggregateProtein += itemProtein;
-                aggregateCarbs += itemCarbs;
-                aggregateFat += itemFat;
-
-                if (slotTotals[cat]) {
-                    slotTotals[cat].kcal += itemKcal;
-                    slotTotals[cat].itemsCount += 1;
-
-                    if (item.isEditing) {
-                        slotTotals[cat].html += `
-                            <div class="inline-edit-box" onclick="event.stopPropagation()">
-                                <div style="font-size:12px; font-weight:600; color:var(--accent-blue);"><i class="fas fa-edit"></i> ${item.name} bearbeiten</div>
-                                <div class="inline-edit-grid">
-                                    <input type="text" id="editAmount-${index}" value="${item.amount || '100g'}" placeholder="Menge">
-                                    <input type="number" id="editKcal-${index}" value="${itemKcal}" placeholder="kcal">
-                                    <input type="number" step="0.1" id="editProt-${index}" value="${itemProtein}" placeholder="P">
-                                </div>
-                                <div class="inline-edit-grid">
-                                    <input type="number" step="0.1" id="editCarb-${index}" value="${itemCarbs}" placeholder="KH">
-                                    <input type="number" step="0.1" id="editFat-${index}" value="${itemFat}" placeholder="F">
-                                    <div style="display:flex; gap:4px;">
-                                        <button class="btn-ios" style="padding:4px; font-size:11px; border-radius:6px;" onclick="saveItemInline(${index})">✔</button>
-                                        <button class="btn-ios" style="padding:4px; font-size:11px; border-radius:6px; background:var(--ios-text-muted);" onclick="toggleEditMode(${index})">✖</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        slotTotals[cat].html += `
-                            <div class="food-item-row" onclick="event.stopPropagation()">
-                                <div class="food-details">
-                                    <div class="food-title">${item.name}</div>
-                                    <div class="food-subinfo">
-                                        <span>${item.amount || '1 Portion'}</span>
-                                        <span>•</span>
-                                        <span>E: ${itemProtein.toFixed(1)}g KH: ${itemCarbs.toFixed(1)}g F: ${itemFat.toFixed(1)}g</span>
-                                    </div>
-                                </div>
-                                <div class="food-row-right">
-                                    <div class="food-kcal">${itemKcal} kcal</div>
-                                    <div class="food-actions">
-                                        <i class="fas fa-pencil food-action-icon edit" title="Bearbeiten" onclick="toggleEditMode(${index})"></i>
-                                        <i class="fas fa-trash food-action-icon delete" title="Löschen" onclick="deleteItemRow(${index})"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            });
-
-            // Update DOM layout elements per slot dynamically
-            for (const [category, data] of Object.entries(slotTotals)) {
-                document.getElementById(`slotKcal-${category}`).innerText = data.kcal;
-                document.getElementById(`slotSub-${category}`).innerText = data.itemsCount === 1 ? '1 Eintrag' : `${data.itemsCount} Einträge`;
-                
-                const container = document.getElementById(`slotContent-${category}`);
-                if (data.itemsCount === 0) {
-                    container.innerHTML = `<div class="empty-slot-text">Keine Einträge für ${category}</div>`;
-                } else {
-                    container.innerHTML = data.html;
-                }
+            if(savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
             }
-
-            // Top Dashboard Render metrics
-            document.getElementById('totalGegessen').innerText = aggregateKcal;
-            document.getElementById('totalVerbrannt').innerText = burned;
-
-            let remainingKcal = DEFAULT_GOAL - aggregateKcal + burned;
-            const remainingDisplayElement = document.getElementById('totalUebrig');
-            remainingDisplayElement.innerText = Math.abs(remainingKcal);
-            
-            const labelElement = document.querySelector('.progress-text-center .label');
-            if (remainingKcal < 0) {
-                labelElement.innerText = 'Über Ziel';
-                labelElement.style.color = 'var(--accent-red)';
-            } else {
-                labelElement.innerText = 'Übrig';
-                labelElement.style.color = 'var(--ios-text-muted)';
-            }
-
-            // Circle Ring Offset Calculations
-            let progressPercent = aggregateKcal / (DEFAULT_GOAL + burned);
-            if (isNaN(progressPercent) || progressPercent < 0) progressPercent = 0;
-            if (progressPercent > 1) progressPercent = 1;
-
-            const circleElement = document.getElementById('progressCircle');
-            const radius = circleElement.r.baseVal.value;
-            const circumference = 2 * Math.PI * radius;
-            const strokeDashoffset = circumference - (progressPercent * circumference);
-            circleElement.style.strokeDashoffset = strokeDashoffset;
-
-            if (remainingKcal < 0) {
-                circleElement.style.stroke = 'var(--accent-red)';
-            } else {
-                circleElement.style.stroke = 'var(--primary)';
-            }
-
-            // Absolute Current Macro Accumulations UI
-            document.getElementById('macroCarbsCurrent').innerText = aggregateCarbs.toFixed(1);
-            document.getElementById('macroProteinCurrent').innerText = aggregateProtein.toFixed(1);
-            document.getElementById('macroFatCurrent').innerText = aggregateFat.toFixed(1);
-
-            // Scale widths cleanly
-            document.getElementById('barCarbs').style.width = Math.min(100, (aggregateCarbs / targetCarbs) * 100) + '%';
-            document.getElementById('barProtein').style.width = Math.min(100, (aggregateProtein / targetProtein) * 100) + '%';
-            document.getElementById('barFat').style.width = Math.min(100, (aggregateFat / targetFat) * 100) + '%';
-        }
-
-        // --- DATA ROW MUTATIONS ---
-        function toggleEditMode(index) {
-            const dayData = getDayData();
-            dayData.meals[index].isEditing = !dayData.meals[index].isEditing;
-            saveDayData(dayData);
-            updateUI();
-        }
-
-        function saveItemInline(index) {
-            const dayData = getDayData();
-            const item = dayData.meals[index];
-
-            const amt = document.getElementById(`editAmount-${index}`)?.value.trim() || item.amount;
-            const kc = Math.round(Number(document.getElementById(`editKcal-${index}`)?.value || item.kcal));
-            const pr = Number(document.getElementById(`editProt-${index}`)?.value || item.protein);
-            const cb = Number(document.getElementById(`editCarb-${index}`)?.value || item.carbs);
-            const ft = Number(document.getElementById(`editFat-${index}`)?.value || item.fett);
-
-            item.amount = amt;
-            item.kcal = kc;
-            item.protein = pr;
-            item.carbs = cb;
-            item.fett = ft;
-            item.isEditing = false;
-
-            dayData.meals[index] = item;
-            saveDayData(dayData);
-
-            // Propagate seamlessly back to scaling dictionary
-            const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
-            dictionary[item.name.toLowerCase().trim()] = { amount: amt, kcal: kc, protein: pr, carbs: cb, fett: ft };
-            localStorage.setItem('food_dictionary', JSON.stringify(dictionary));
-
-            updateUI();
-        }
-
-        function deleteItemRow(index) {
-            const dayData = getDayData();
-            if (confirm(`"${dayData.meals[index].name}" wirklich entfernen?`)) {
-                dayData.meals.splice(index, 1);
-                saveDayData(dayData);
-                updateUI();
-            }
-        }
-
-        // --- APP OPTIONS CONFIG MANAGEMENT ---
-        function openSettings() {
-            document.getElementById('settingsOverlay').classList.add('show');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsOverlay').classList.remove('show');
         }
 
         function saveSettings() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            const goal = document.getElementById('goalInput').value.trim();
-            
-            if(key) localStorage.setItem('groq_api_key', key);
+            const goal = document.getElementById('goalInput').value;
+            const key = document.getElementById('apiKeyInput').value;
             if(goal) {
-                localStorage.setItem('daily_kcal_goal', goal);
+                localStorage.setItem('daily_goal', goal);
                 DEFAULT_GOAL = parseInt(goal);
+            }
+            if(key) {
+                localStorage.setItem('groq_api_key', key);
             }
             closeSettings();
             updateUI();
         }
 
-        function loadSettings() {
-            const key = localStorage.getItem('groq_api_key');
-            const goal = localStorage.getItem('daily_kcal_goal');
-            if(key) document.getElementById('apiKeyInput').value = key;
-            if(goal) {
-                document.getElementById('goalInput').value = goal;
-                DEFAULT_GOAL = parseInt(goal);
+        function promptBurnedCalories() {
+            const currentBurned = getDayData().burned || 0;
+            const input = prompt("Wie viele Kalorien hast du heute durch Sport verbrannt?", currentBurned);
+            if(input !== null && !isNaN(input)) {
+                let data = getDayData();
+                data.burned = parseInt(input) || 0;
+                saveDayData(data);
             }
         }
 
         function clearAllData() {
-            if (confirm("⚠️ Möchtest du wirklich die komplette Historie und alle Einstellungen löschen?")) {
+            if(confirm("Bist du sicher? Alle Tage und Einstellungen werden gelöscht.")) {
                 localStorage.clear();
                 location.reload();
             }
         }
 
-        // --- ARTIFICIAL INTELLIGENCE PIPELINE INTEGRATION ---
+        // --- UI Updates ---
+        function updateUI() {
+            const data = getDayData();
+            const meals = data.meals || [];
+            const burned = data.burned || 0;
+
+            let totalKcal = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
+            const categories = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snacks'];
+            const categorySums = { 'Frühstück': 0, 'Mittagessen': 0, 'Abendessen': 0, 'Snacks': 0 };
+
+            // Berechnen
+            meals.forEach(m => {
+                totalKcal += m.kcal || 0;
+                totalProtein += m.protein || 0;
+                totalCarbs += m.carbs || 0;
+                totalFat += m.fat || 0;
+                if(categorySums[m.category] !== undefined) {
+                    categorySums[m.category] += (m.kcal || 0);
+                }
+            });
+
+            // Oben Dashboard
+            document.getElementById('totalGegessen').innerText = totalKcal;
+            document.getElementById('totalVerbrannt').innerText = burned;
+            
+            let remaining = DEFAULT_GOAL - totalKcal + burned;
+            document.getElementById('totalUebrig').innerText = remaining;
+
+            // Ring Animation
+            const circle = document.getElementById('progressCircle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const percent = Math.min((totalKcal / (DEFAULT_GOAL + burned)) * 100, 100);
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = isNaN(offset) ? circumference : offset;
+            
+            // Makros (Standard-Ziele basierend auf Goal: 50% Carbs, 25% Prot, 25% Fat grob)
+            const goalCarbs = Math.round((DEFAULT_GOAL * 0.5) / 4);
+            const goalProtein = Math.round((DEFAULT_GOAL * 0.25) / 4);
+            const goalFat = Math.round((DEFAULT_GOAL * 0.25) / 9);
+
+            document.getElementById('macroCarbsCurrent').innerText = totalCarbs;
+            document.getElementById('macroCarbsTarget').innerText = goalCarbs;
+            document.getElementById('barCarbs').style.width = `${Math.min((totalCarbs/goalCarbs)*100, 100)}%`;
+
+            document.getElementById('macroProteinCurrent').innerText = totalProtein;
+            document.getElementById('macroProteinTarget').innerText = goalProtein;
+            document.getElementById('barProtein').style.width = `${Math.min((totalProtein/goalProtein)*100, 100)}%`;
+
+            document.getElementById('macroFatCurrent').innerText = totalFat;
+            document.getElementById('macroFatTarget').innerText = goalFat;
+            document.getElementById('barFat').style.width = `${Math.min((totalFat/goalFat)*100, 100)}%`;
+
+            // Listen füllen
+            categories.forEach(cat => {
+                document.getElementById(`slotKcal-${cat}`).innerText = categorySums[cat];
+                const catMeals = meals.filter(m => m.category === cat);
+                document.getElementById(`slotSub-${cat}`).innerText = catMeals.length > 0 ? `${catMeals.length} Einträge` : 'Keine Einträge';
+                
+                const contentDiv = document.getElementById(`slotContent-${cat}`);
+                if(catMeals.length === 0) {
+                    contentDiv.innerHTML = `<div class="empty-slot-text">Noch nichts eingetragen</div>`;
+                } else {
+                    contentDiv.innerHTML = catMeals.map(m => {
+                        // Wenn dieses Item gerade bearbeitet wird:
+                        if(editingMealId === m.id) {
+                            return `
+                                <div class="inline-edit-box">
+                                    <input type="text" class="title-input" id="editTitle_${m.id}" value="${m.title}">
+                                    <div class="inline-edit-grid">
+                                        <div>
+                                            <label>Kcal</label>
+                                            <input type="number" id="editKcal_${m.id}" value="${m.kcal}">
+                                        </div>
+                                        <div>
+                                            <label>Kohlenh. (g)</label>
+                                            <input type="number" id="editCarbs_${m.id}" value="${m.carbs}">
+                                        </div>
+                                        <div>
+                                            <label>Eiweiß (g)</label>
+                                            <input type="number" id="editProtein_${m.id}" value="${m.protein}">
+                                        </div>
+                                        <div>
+                                            <label>Fett (g)</label>
+                                            <input type="number" id="editFat_${m.id}" value="${m.fat}">
+                                        </div>
+                                    </div>
+                                    <button class="btn-ios" style="padding: 10px; font-size: 14px; border-radius: 10px;" onclick="saveMealEdit('${m.id}')">
+                                        <i class="fas fa-check"></i> Bestätigen
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="food-item-row">
+                                    <div class="food-details">
+                                        <div class="food-title">${m.title}</div>
+                                        <div class="food-subinfo">
+                                            <span>${m.carbs}g K</span> • 
+                                            <span>${m.protein}g E</span> • 
+                                            <span>${m.fat}g F</span>
+                                        </div>
+                                    </div>
+                                    <div class="food-row-right">
+                                        <div class="food-kcal">${m.kcal} kcal</div>
+                                        <div class="food-actions">
+                                            <div class="food-action-icon edit" onclick="startEditMeal('${m.id}')"><i class="fas fa-pen"></i></div>
+                                            <div class="food-action-icon delete" onclick="deleteMeal('${m.id}')"><i class="fas fa-trash"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }).join('');
+                }
+            });
+            
+            // Setze Datum Header einmalig
+            document.querySelector('.header-nav h1').innerText = getHumanReadableDateLabel(viewedDate);
+        }
+
+        // --- Bearbeiten / Löschen ---
+        function startEditMeal(id) {
+            editingMealId = id;
+            updateUI(); // Rerendert die Liste mit dem Eingabefeld
+        }
+
+        function saveMealEdit(id) {
+            const data = getDayData();
+            const mealIndex = data.meals.findIndex(m => m.id === id);
+            
+            if(mealIndex > -1) {
+                data.meals[mealIndex].title = document.getElementById(`editTitle_${id}`).value;
+                data.meals[mealIndex].kcal = parseInt(document.getElementById(`editKcal_${id}`).value) || 0;
+                data.meals[mealIndex].carbs = parseInt(document.getElementById(`editCarbs_${id}`).value) || 0;
+                data.meals[mealIndex].protein = parseInt(document.getElementById(`editProtein_${id}`).value) || 0;
+                data.meals[mealIndex].fat = parseInt(document.getElementById(`editFat_${id}`).value) || 0;
+                
+                saveDayData(data);
+            }
+            editingMealId = null; // Beendet Bearbeitungsmodus
+            updateUI();
+        }
+
+        function deleteMeal(id) {
+            if(confirm('Eintrag löschen?')) {
+                const data = getDayData();
+                data.meals = data.meals.filter(m => m.id !== id);
+                saveDayData(data);
+            }
+        }
+
+        // --- Groq AI API ---
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
-            if(!apiKey) {
-                alert("🔑 Bitte tippe oben rechts auf das Rädchen ⚙️ und hinterlege deinen GROQ Cloud API Key!");
-                openSettings();
-                return;
-            }
+            const inputField = document.getElementById('mealInput');
+            const foodText = inputField.value.trim();
 
-            const mealText = document.getElementById('mealInput').value.trim();
-            if(!mealText) {
-                alert("📝 Bitte gib ein, was du gegessen hast!");
-                return;
-            }
+            if (!apiKey) return alert('Bitte zuerst den Groq API Key in den Einstellungen hinterlegen!');
+            if (!foodText) return alert('Bitte gib ein, was du gegessen hast.');
 
             const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse läuft...';
 
-            const customDictionary = localStorage.getItem('food_dictionary') || '{}';
-            const systemPrompt = `Du bist ein präziser Daten-Extraktor für Lebensmittel. Deine Aufgabe ist es, aus dem folgenden Text alle Lebensmittel zu extrahieren und deren Nährwerte basierend auf der genannten menge zu schätzen.
-
-WICHTIGE BENUTZERREGELN (Lern-Modus):
-Der Benutzer hat in der Vergangenheit manuelle Korrektionen vorgenommen. In der folgenden JSON-Liste siehst du Lebensmittel mit den Nährwerten für eine ganz bestimmte Basismenge ("amount").
-Wenn das eingegebene Lebensmittel mit einem Eintrag aus dieser Liste übereinstimmt, verwende diesen Eintrag als absolut exakte Referenzbasis und berechne (skaliere) die neuen Nährwerte per Dreisatz exakt proportional auf die vom Benutzer aktuell geforderte Menge hoch oder runter!
-${customDictionary}
-
-Allgemeine Schätz-Regeln:
-1. Wenn im Text keine spezifische Marke genannt wird, nimm hypothetische Standardwerte von deutschen Supermarkt-Eigenmarken (z.B. ja!, Gut & Günstig).
-2. Eine Zahl vor dem Lebensmittel definiert die Menge (entweder in Gramm/Milliliter oder als Stück/Scheibe). 
-3. Wenn keine Zahl genannt wird, nimm standardmäßig die Menge "1 Stück" oder eine übliche Einzelmenge an.
-4. Berechne die Nährwerte (kcal, protein, carbs, fett) proportional für die gesamte angegebene Menge (NICHT pro 100g).
-
-Ausgabe-Format:
-Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smalltalk, keine Markdown-Formatierung.
-
-{
-  "items": [
-    {
-      "name": "Magerquark",
-      "brand": "Eigenmarke",
-      "amount": "250g",
-      "kcal": 170,
-      "protein": 30,
-      "carbs": 10,
-      "fett": 1
-    }
-  ]
-}`;
+            const prompt = `Analysiere folgende Mahlzeit und antworte AUSSCHLIESSLICH im JSON Format ohne Markdown. Schätze die Nährwerte realistisch. Format: {"title": "Name der Mahlzeit", "kcal": Zahl, "protein": Zahl, "carbs": Zahl, "fat": Zahl}. Mahlzeit: ${foodText}`;
 
             try {
                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -1216,59 +1081,46 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "meta-llama/llama-4-scout-17b-16e-instruct", 
-                        response_format: { "type": "json_object" }, 
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: mealText }
-                        ],
-                        temperature: 0.0 
+                        model: "llama3-8b-8192",
+                        messages: [{ role: "user", content: prompt }],
+                        temperature: 0.1
                     })
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    alert(`❌ Groq-Fehler (Status ${response.status}):
-
-${errorText}`);
-                    return;
-                }
-
-                const data = await response.json();
-                let aiResponseText = data.choices[0].message.content.trim();
-                const parsedData = JSON.parse(aiResponseText);
-                const parsedItems = parsedData.items || [];
-
-                if(parsedItems.length === 0) {
-                    alert("⚠️ Keine Lebensmittel erkannt. Bitte versuche es mit einer anderen Eingabe!");
-                    return;
-                }
-
-                const dayData = getDayData();
-                const now = new Date();
-                const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-                parsedItems.forEach(item => {
-                    item.time = currentTimeStr;
-                    item.isEditing = false;
-                    item.category = activeCategory; // Seamless routing to user chosen active slot layout
-                    dayData.meals.push(item);
-                });
-
-                saveDayData(dayData);
+                const jsonStr = await response.json();
+                let resultText = jsonStr.choices[0].message.content.trim();
                 
-                // Auto expand slot to see new items added instantly
-                document.getElementById(`slotCard-${activeCategory}`).classList.add('expanded');
+                // Parse bereinigen falls AI Markdown Code-Blöcke sendet
+                if(resultText.startsWith('```json')) resultText = resultText.replace('```json', '').replace('```', '');
                 
-                updateUI();
-                document.getElementById('mealInput').value = '';
+                const resultObj = JSON.parse(resultText);
+                
+                const newMeal = {
+                    id: Date.now().toString(),
+                    category: activeCategory,
+                    title: resultObj.title || foodText.substring(0, 20),
+                    kcal: resultObj.kcal || 0,
+                    protein: resultObj.protein || 0,
+                    carbs: resultObj.carbs || 0,
+                    fat: resultObj.fat || 0
+                };
+
+                const data = getDayData();
+                data.meals.push(newMeal);
+                saveDayData(data);
+
+                inputField.value = '';
+                
+                // Öffne den entsprechenden Slot, um das Ergebnis zu zeigen
+                const card = document.getElementById(`slotCard-${activeCategory}`);
+                if(!card.classList.contains('expanded')) toggleSlotExpansion(activeCategory);
 
             } catch (error) {
-                console.error("Fehler:", error);
-                alert("❌ Fehler beim Verarbeiten: " + error.message);
+                console.error(error);
+                alert('Fehler bei der Analyse. Stimmt dein API Key?');
             } finally {
-                btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-bolt"></i> Smart Scan';
+                btn.disabled = false;
             }
         }
     </script>
