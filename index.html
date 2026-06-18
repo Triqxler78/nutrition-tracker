@@ -62,31 +62,26 @@
         }
 
         body {
-            /* Hintergrundfarbe passt sich nun automatisch an Hell/Dunkel an */
             background-color: var(--ios-bg);
             color: var(--ios-text-main); 
 
-            /* Automatischer iPhone-Rand + Extra Komfort-Abstand */
             padding-top: calc(env(safe-area-inset-top) + 20px);
             padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
 
-            /* Sorgt dafür, dass das Padding das Layout nicht zerschießt und nichts übersteht */
             box-sizing: border-box; 
             overflow-x: hidden; 
             width: 100vw;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .app-container {
             width: 100%;
             max-width: 480px;
-            margin: 0 auto; /* Zentriert die App auf größeren Bildschirmen */
+            margin: 0 auto; 
             display: flex;
             flex-direction: column;
             gap: 20px;
-            /* Hier fügen wir den seitlichen Abstand (16px) ein, damit nichts am Rand klebt */
             padding: 20px 16px 40px 16px;
         }
 
@@ -202,7 +197,6 @@
             font-weight: 500;
         }
 
-        /* Circular Progress Ring */
         .progress-ring-container {
             position: relative;
             width: 150px;
@@ -239,7 +233,6 @@
             margin-top: 4px;
         }
 
-        /* Inline Horizontal Macros */
         .macro-bars-container {
             width: 100%;
             display: flex;
@@ -300,40 +293,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        /* Category Selector Pills */
-        .category-pill-box {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            scrollbar-width: none;
-        }
-        .category-pill-box::-webkit-scrollbar {
-            display: none;
-        }
-
-        .category-pill {
-            background: var(--ios-bg);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 99px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--ios-text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .category-pill.active {
-            background: var(--accent-blue);
-            color: #FFFFFF;
         }
 
         textarea {
@@ -408,7 +367,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px;
-            cursor: pointer;
             user-select: none;
         }
 
@@ -426,13 +384,9 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            background-color: rgba(0, 122, 255, 0.12);
+            color: var(--accent-blue);
         }
-
-        /* Colors for different slots */
-        .slot-frühstück { background-color: rgba(90, 200, 250, 0.12); color: var(--accent-teal); }
-        .slot-mittagessen { background-color: rgba(255, 149, 0, 0.12); color: var(--accent-orange); }
-        .slot-abendessen { background-color: rgba(52, 199, 89, 0.12); color: var(--primary); }
-        .slot-snacks { background-color: rgba(255, 59, 48, 0.12); color: var(--accent-red); }
 
         .meal-slot-title {
             font-size: 17px;
@@ -457,27 +411,12 @@
             color: var(--ios-text-main);
         }
 
-        .plus-circle-btn {
-            color: var(--accent-blue);
-            font-size: 22px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .plus-circle-btn:hover {
-            transform: scale(1.1);
-        }
-
-        /* Expanded Item List Content */
         .meal-slot-content {
             border-top: 1px solid var(--border-color);
             background: #FAFAFC;
-            display: none;
+            display: flex;
             flex-direction: column;
             padding: 8px 16px;
-        }
-
-        .meal-slot-card.expanded .meal-slot-content {
-            display: flex;
         }
 
         .food-item-row {
@@ -605,36 +544,37 @@
             border-color: var(--accent-blue);
         }
 
-/* --- EDITING INLINE FORM --- */
-.inline-edit-box {
-    background: var(--ios-card);
-    border-radius: 12px;
-    padding: 12px;
-    border: 1px dashed var(--accent-blue);
-    margin: 8px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-}
+        /* --- EDITING INLINE FORM --- */
+        .inline-edit-box {
+            background: var(--ios-card);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px dashed var(--accent-blue);
+            margin: 8px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
 
-.inline-edit-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px; /* Etwas verkleinert von 8px auf 6px für mehr Platz */
-}
+        .inline-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px; 
+        }
 
-.inline-edit-box input {
-    padding: 6px 4px; /* Padding reduziert, damit der Text reinpasst */
-    background: var(--ios-bg);
-    color: var(--ios-text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 13px; /* Schrift minimal kleiner gemacht (vorher 14px) */
-    text-align: center;
-    width: 100%; /* Stellt sicher, dass das Feld im Grid bleibt */
-    min-width: 0; /* DER WICHTIGSTE FIX: Zwingt das Feld, kleiner zu werden, wenn der Platz fehlt */
-}
+        .inline-edit-box input {
+            padding: 6px 4px;
+            background: var(--ios-bg);
+            color: var(--ios-text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            width: 100%;
+            min-width: 0; 
+        }
+
         /* --- HELPER STYLES --- */
         .empty-slot-text {
             font-size: 13px;
@@ -719,11 +659,9 @@
         <div class="tracker-card">
             <div class="section-title-ios"><i class="fas fa-sparkles" style="color: var(--accent-orange);"></i> Mahlzeit tracken</div>
             
-            <div class="category-pill-box">
-                <button class="category-pill active" onclick="selectCategory('Frühstück', this)">🥣 Frühstück</button>
-                <button class="category-pill" onclick="selectCategory('Mittagessen', this)">🥪 Mittagessen</button>
-                <button class="category-pill" onclick="selectCategory('Abendessen', this)">🥗 Abendessen</button>
-                <button class="category-pill" onclick="selectCategory('Snacks', this)">🍎 Snacks</button>
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                <label for="mealTimeInput" style="font-size: 14px; font-weight: 600; color: var(--ios-text-muted);">Uhrzeit:</label>
+                <input type="time" id="mealTimeInput" style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--ios-bg); color: var(--ios-text-main); font-size: 15px;">
             </div>
 
             <textarea id="mealInput" rows="3" placeholder="Z.B. 1 Banane, 50g Haferflocken und 200ml Milch..."></textarea>
@@ -736,75 +674,21 @@
         </div>
 
         <div class="slots-container">
-            
-            <div class="meal-slot-card" id="slotCard-Frühstück">
-                <div class="meal-slot-header" onclick="toggleSlotExpansion('Frühstück')">
+            <div class="meal-slot-card" id="slotCard-Timeline">
+                <div class="meal-slot-header" style="cursor: default;">
                     <div class="meal-slot-header-left">
-                        <div class="meal-slot-icon-wrapper slot-frühstück"><i class="fas fa-coffee"></i></div>
+                        <div class="meal-slot-icon-wrapper"><i class="fas fa-list-ul"></i></div>
                         <div>
-                            <div class="meal-slot-title">Frühstück</div>
-                            <div class="meal-slot-subtitle" id="slotSub-Frühstück">Keine Einträge</div>
+                            <div class="meal-slot-title">Tagesverlauf</div>
+                            <div class="meal-slot-subtitle" id="slotSub-Timeline">Keine Einträge</div>
                         </div>
                     </div>
                     <div class="meal-slot-header-right">
-                        <div class="meal-slot-kcal-badge"><span id="slotKcal-Frühstück">0</span> kcal</div>
-                        <i class="fas fa-plus-circle plus-circle-btn" onclick="event.stopPropagation(); quickAddRoute('Frühstück')"></i>
+                        <div class="meal-slot-kcal-badge"><span id="slotKcal-Timeline">0</span> kcal</div>
                     </div>
                 </div>
-                <div class="meal-slot-content" id="slotContent-Frühstück"></div>
+                <div class="meal-slot-content" id="slotContent-Timeline"></div>
             </div>
-
-            <div class="meal-slot-card" id="slotCard-Mittagessen">
-                <div class="meal-slot-header" onclick="toggleSlotExpansion('Mittagessen')">
-                    <div class="meal-slot-header-left">
-                        <div class="meal-slot-icon-wrapper slot-mittagessen"><i class="fas fa-hamburger"></i></div>
-                        <div>
-                            <div class="meal-slot-title">Mittagessen</div>
-                            <div class="meal-slot-subtitle" id="slotSub-Mittagessen">Keine Einträge</div>
-                        </div>
-                    </div>
-                    <div class="meal-slot-header-right">
-                        <div class="meal-slot-kcal-badge"><span id="slotKcal-Mittagessen">0</span> kcal</div>
-                        <i class="fas fa-plus-circle plus-circle-btn" onclick="event.stopPropagation(); quickAddRoute('Mittagessen')"></i>
-                    </div>
-                </div>
-                <div class="meal-slot-content" id="slotContent-Mittagessen"></div>
-            </div>
-
-            <div class="meal-slot-card" id="slotCard-Abendessen">
-                <div class="meal-slot-header" onclick="toggleSlotExpansion('Abendessen')">
-                    <div class="meal-slot-header-left">
-                        <div class="meal-slot-icon-wrapper slot-abendessen"><i class="fas fa-utensils"></i></div>
-                        <div>
-                            <div class="meal-slot-title">Abendessen</div>
-                            <div class="meal-slot-subtitle" id="slotSub-Abendessen">Keine Einträge</div>
-                        </div>
-                    </div>
-                    <div class="meal-slot-header-right">
-                        <div class="meal-slot-kcal-badge"><span id="slotKcal-Abendessen">0</span> kcal</div>
-                        <i class="fas fa-plus-circle plus-circle-btn" onclick="event.stopPropagation(); quickAddRoute('Abendessen')"></i>
-                    </div>
-                </div>
-                <div class="meal-slot-content" id="slotContent-Abendessen"></div>
-            </div>
-
-            <div class="meal-slot-card" id="slotCard-Snacks">
-                <div class="meal-slot-header" onclick="toggleSlotExpansion('Snacks')">
-                    <div class="meal-slot-header-left">
-                        <div class="meal-slot-icon-wrapper slot-snacks"><i class="fas fa-apple-alt"></i></div>
-                        <div>
-                            <div class="meal-slot-title">Snacks</div>
-                            <div class="meal-slot-subtitle" id="slotSub-Snacks">Keine Einträge</div>
-                        </div>
-                    </div>
-                    <div class="meal-slot-header-right">
-                        <div class="meal-slot-kcal-badge"><span id="slotKcal-Snacks">0</span> kcal</div>
-                        <i class="fas fa-plus-circle plus-circle-btn" onclick="event.stopPropagation(); quickAddRoute('Snacks')"></i>
-                    </div>
-                </div>
-                <div class="meal-slot-content" id="slotContent-Snacks"></div>
-            </div>
-
         </div>
 
     </div>
@@ -825,6 +709,16 @@
                 <input type="number" id="goalInput" placeholder="z.B. 2000" min="500" max="5000">
             </div>
 
+            <div class="input-group-ios">
+                <label>⚖️ Makro-Verteilung (%)</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="pctCarbs" placeholder="KH %" title="Kohlenhydrate (%)" min="0" max="100">
+                    <input type="number" id="pctProtein" placeholder="P %" title="Protein (%)" min="0" max="100">
+                    <input type="number" id="pctFat" placeholder="F %" title="Fett (%)" min="0" max="100">
+                </div>
+                <div id="macroWarning" style="color: var(--accent-red); font-size: 12px; margin-top: 6px; display: none; font-weight: 500;">Die Summe der Makros muss 100% ergeben.</div>
+            </div>
+
             <button class="btn-ios" style="margin-top: 10px; width: 100%;" onclick="saveSettings()">
                 <i class="fas fa-check-circle"></i> Speichern & Schließen
             </button>
@@ -836,14 +730,19 @@
     </div>
 
     <script>
-        // Global State Architecture supporting full date tracking
-        let activeCategory = 'Frühstück';
         let DEFAULT_GOAL = 2000;
-        let viewedDate = new Date(); // Local tracking date context
+        let MACRO_CARBS = 50;
+        let MACRO_PROTEIN = 25;
+        let MACRO_FAT = 25;
+        let viewedDate = new Date(); 
 
         window.onload = function() {
             migrateOldSchema();
             loadSettings();
+            
+            // Setze die aktuelle Uhrzeit in das Time-Input-Feld
+            document.getElementById('mealTimeInput').value = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            
             updateUI();
         };
 
@@ -867,7 +766,6 @@
             updateUI();
         }
 
-        // Seamless migration path for V1 users so no data is lost
         function migrateOldSchema() {
             const oldLog = localStorage.getItem('meal_log');
             if (oldLog) {
@@ -879,12 +777,12 @@
                         if (!database[todayKey]) database[todayKey] = { meals: [], burned: 0 };
                         
                         parsed.forEach(item => {
-                            if (!item.category) item.category = 'Snacks';
+                            if (!item.time) item.time = "12:00"; // Fallback Time
                             database[todayKey].meals.push(item);
                         });
                         localStorage.setItem('meal_log_v2', JSON.stringify(database));
                     }
-                    localStorage.removeItem('meal_log'); // clear out legacy item cleanly
+                    localStorage.removeItem('meal_log');
                 } catch(e) { console.error("Migration error:", e); }
             }
         }
@@ -905,27 +803,6 @@
             localStorage.setItem('meal_log_v2', JSON.stringify(database));
         }
 
-        function selectCategory(categoryName, element) {
-            activeCategory = categoryName;
-            document.querySelectorAll('.category-pill').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        function quickAddRoute(categoryName) {
-            activeCategory = categoryName;
-            document.querySelectorAll('.category-pill').forEach(btn => {
-                if(btn.innerText.includes(categoryName)) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            document.getElementById('mealInput').focus();
-            document.getElementById('mealInput').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function toggleSlotExpansion(category) {
-            const card = document.getElementById(`slotCard-${category}`);
-            card.classList.toggle('expanded');
-        }
-
         function promptBurnedCalories() {
             const currentData = getDayData();
             const val = prompt("Verbrannte Kalorien (Aktivitäten/Sport) hinzufügen:", currentData.burned || 0);
@@ -937,109 +814,99 @@
             }
         }
 
-        // --- CORE UI SYNCHRONIZATION ---
         function updateUI() {
             const dayData = getDayData();
             const meals = dayData.meals || [];
             const burned = dayData.burned || 0;
             
-            // Dynamic Label Update
             const dateKey = getFormattedDateKey(viewedDate);
             document.getElementById('dateLabel').innerText = getHumanReadableDateLabel(viewedDate);
             document.querySelector('.header-nav h1').innerText = getHumanReadableDateLabel(viewedDate);
 
-            // Dynamically calculate Macro Targets proportional to current target kcal
-            const targetCarbs = Math.round((DEFAULT_GOAL * 0.50) / 4);
-            const targetProtein = Math.round((DEFAULT_GOAL * 0.25) / 4);
-            const targetFat = Math.round((DEFAULT_GOAL * 0.25) / 9);
+            // Prozentuale Berechnung der Makros
+            const targetCarbs = Math.round((DEFAULT_GOAL * (MACRO_CARBS / 100)) / 4);
+            const targetProtein = Math.round((DEFAULT_GOAL * (MACRO_PROTEIN / 100)) / 4);
+            const targetFat = Math.round((DEFAULT_GOAL * (MACRO_FAT / 100)) / 9);
 
             document.getElementById('macroCarbsTarget').innerText = targetCarbs;
             document.getElementById('macroProteinTarget').innerText = targetProtein;
             document.getElementById('macroFatTarget').innerText = targetFat;
 
-            // Slot breakdowns
-            const slotTotals = {
-                'Frühstück': { kcal: 0, itemsCount: 0, html: '' },
-                'Mittagessen': { kcal: 0, itemsCount: 0, html: '' },
-                'Abendessen': { kcal: 0, itemsCount: 0, html: '' },
-                'Snacks': { kcal: 0, itemsCount: 0, html: '' }
-            };
-
             let aggregateKcal = 0, aggregateProtein = 0, aggregateCarbs = 0, aggregateFat = 0;
+            let htmlContent = '';
+
+            // Chronologische Sortierung
+            meals.sort((a, b) => {
+                const timeA = a.time || '00:00';
+                const timeB = b.time || '00:00';
+                return timeA.localeCompare(timeB);
+            });
 
             meals.forEach((item, index) => {
                 const itemKcal = Math.round(Number(item.kcal || 0));
                 const itemProtein = Number(item.protein || 0);
                 const itemCarbs = Number(item.carbs || 0);
                 const itemFat = Number(item.fett || 0);
-                const cat = item.category || 'Snacks';
 
                 aggregateKcal += itemKcal;
                 aggregateProtein += itemProtein;
                 aggregateCarbs += itemCarbs;
                 aggregateFat += itemFat;
 
-                if (slotTotals[cat]) {
-                    slotTotals[cat].kcal += itemKcal;
-                    slotTotals[cat].itemsCount += 1;
-
-                    if (item.isEditing) {
-                        slotTotals[cat].html += `
-                            <div class="inline-edit-box" onclick="event.stopPropagation()">
-                                <div style="font-size:12px; font-weight:600; color:var(--accent-blue);"><i class="fas fa-edit"></i> ${item.name} bearbeiten</div>
-                                <div class="inline-edit-grid">
-                                    <input type="text" id="editAmount-${index}" value="${item.amount || '100g'}" placeholder="Menge">
-                                    <input type="number" id="editKcal-${index}" value="${itemKcal}" placeholder="kcal">
-                                    <input type="number" step="0.1" id="editProt-${index}" value="${itemProtein}" placeholder="P">
-                                </div>
-                                <div class="inline-edit-grid">
-                                    <input type="number" step="0.1" id="editCarb-${index}" value="${itemCarbs}" placeholder="KH">
-                                    <input type="number" step="0.1" id="editFat-${index}" value="${itemFat}" placeholder="F">
-                                </div>
-                                <div style="display:flex; gap:8px; margin-top:8px;">
-                                    <button class="btn-ios" style="flex:1; padding:10px; font-size:14px; border-radius:10px; background:var(--primary);" onclick="saveItemInline(${index})"><i class="fas fa-check"></i> Bestätigen</button>
-                                    <button class="btn-ios" style="padding:10px 16px; font-size:14px; border-radius:10px; background:var(--ios-text-muted);" onclick="toggleEditMode(${index})"><i class="fas fa-times"></i></button>
+                if (item.isEditing) {
+                    htmlContent += `
+                        <div class="inline-edit-box" onclick="event.stopPropagation()">
+                            <div style="font-size:12px; font-weight:600; color:var(--accent-blue);"><i class="fas fa-edit"></i> ${item.name} bearbeiten</div>
+                            <input type="time" id="editTime-${index}" value="${item.time || ''}" style="width: auto; margin-bottom: 4px;">
+                            <div class="inline-edit-grid">
+                                <input type="text" id="editAmount-${index}" value="${item.amount || '100g'}" placeholder="Menge">
+                                <input type="number" id="editKcal-${index}" value="${itemKcal}" placeholder="kcal">
+                                <input type="number" step="0.1" id="editProt-${index}" value="${itemProtein}" placeholder="P">
+                            </div>
+                            <div class="inline-edit-grid">
+                                <input type="number" step="0.1" id="editCarb-${index}" value="${itemCarbs}" placeholder="KH">
+                                <input type="number" step="0.1" id="editFat-${index}" value="${itemFat}" placeholder="F">
+                            </div>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <button class="btn-ios" style="flex:1; padding:10px; font-size:14px; border-radius:10px; background:var(--primary);" onclick="saveItemInline(${index})"><i class="fas fa-check"></i></button>
+                                <button class="btn-ios" style="padding:10px 16px; font-size:14px; border-radius:10px; background:var(--ios-text-muted);" onclick="toggleEditMode(${index})"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    htmlContent += `
+                        <div class="food-item-row" onclick="event.stopPropagation()">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--accent-blue); width: 45px; flex-shrink: 0;">${item.time || '--:--'}</div>
+                            <div class="food-details">
+                                <div class="food-title">${item.name}</div>
+                                <div class="food-subinfo">
+                                    <span>${item.amount || '1 Portion'}</span>
+                                    <span>•</span>
+                                    <span>E: ${itemProtein.toFixed(1)}g KH: ${itemCarbs.toFixed(1)}g F: ${itemFat.toFixed(1)}g</span>
                                 </div>
                             </div>
-                        `;
-                    } else {
-                        slotTotals[cat].html += `
-                            <div class="food-item-row" onclick="event.stopPropagation()">
-                                <div class="food-details">
-                                    <div class="food-title">${item.name}</div>
-                                    <div class="food-subinfo">
-                                        <span>${item.amount || '1 Portion'}</span>
-                                        <span>•</span>
-                                        <span>E: ${itemProtein.toFixed(1)}g KH: ${itemCarbs.toFixed(1)}g F: ${itemFat.toFixed(1)}g</span>
-                                    </div>
-                                </div>
-                                <div class="food-row-right">
-                                    <div class="food-kcal">${itemKcal} kcal</div>
-                                    <div class="food-actions">
-                                        <i class="fas fa-pencil food-action-icon edit" title="Bearbeiten" onclick="toggleEditMode(${index})"></i>
-                                        <i class="fas fa-trash food-action-icon delete" title="Löschen" onclick="deleteItemRow(${index})"></i>
-                                    </div>
+                            <div class="food-row-right">
+                                <div class="food-kcal">${itemKcal} kcal</div>
+                                <div class="food-actions">
+                                    <i class="fas fa-pencil food-action-icon edit" title="Bearbeiten" onclick="toggleEditMode(${index})"></i>
+                                    <i class="fas fa-trash food-action-icon delete" title="Löschen" onclick="deleteItemRow(${index})"></i>
                                 </div>
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
                 }
             });
 
-            // Update DOM layout elements per slot dynamically
-            for (const [category, data] of Object.entries(slotTotals)) {
-                document.getElementById(`slotKcal-${category}`).innerText = data.kcal;
-                document.getElementById(`slotSub-${category}`).innerText = data.itemsCount === 1 ? '1 Eintrag' : `${data.itemsCount} Einträge`;
-                
-                const container = document.getElementById(`slotContent-${category}`);
-                if (data.itemsCount === 0) {
-                    container.innerHTML = `<div class="empty-slot-text">Keine Einträge für ${category}</div>`;
-                } else {
-                    container.innerHTML = data.html;
-                }
+            document.getElementById('slotKcal-Timeline').innerText = aggregateKcal;
+            document.getElementById('slotSub-Timeline').innerText = meals.length === 1 ? '1 Eintrag' : `${meals.length} Einträge`;
+            
+            const container = document.getElementById('slotContent-Timeline');
+            if (meals.length === 0) {
+                container.innerHTML = `<div class="empty-slot-text">Keine Einträge für heute</div>`;
+            } else {
+                container.innerHTML = htmlContent;
             }
 
-            // Top Dashboard Render metrics
             document.getElementById('totalGegessen').innerText = aggregateKcal;
             document.getElementById('totalVerbrannt').innerText = burned;
 
@@ -1056,7 +923,6 @@
                 labelElement.style.color = 'var(--ios-text-muted)';
             }
 
-            // Circle Ring Offset Calculations
             let progressPercent = aggregateKcal / (DEFAULT_GOAL + burned);
             if (isNaN(progressPercent) || progressPercent < 0) progressPercent = 0;
             if (progressPercent > 1) progressPercent = 1;
@@ -1073,18 +939,15 @@
                 circleElement.style.stroke = 'var(--primary)';
             }
 
-            // Absolute Current Macro Accumulations UI
             document.getElementById('macroCarbsCurrent').innerText = aggregateCarbs.toFixed(1);
             document.getElementById('macroProteinCurrent').innerText = aggregateProtein.toFixed(1);
             document.getElementById('macroFatCurrent').innerText = aggregateFat.toFixed(1);
 
-            // Scale widths cleanly
             document.getElementById('barCarbs').style.width = Math.min(100, (aggregateCarbs / targetCarbs) * 100) + '%';
             document.getElementById('barProtein').style.width = Math.min(100, (aggregateProtein / targetProtein) * 100) + '%';
             document.getElementById('barFat').style.width = Math.min(100, (aggregateFat / targetFat) * 100) + '%';
         }
 
-        // --- DATA ROW MUTATIONS ---
         function toggleEditMode(index) {
             const dayData = getDayData();
             dayData.meals[index].isEditing = !dayData.meals[index].isEditing;
@@ -1096,12 +959,14 @@
             const dayData = getDayData();
             const item = dayData.meals[index];
 
+            const tm = document.getElementById(`editTime-${index}`)?.value || item.time;
             const amt = document.getElementById(`editAmount-${index}`)?.value.trim() || item.amount;
             const kc = Math.round(Number(document.getElementById(`editKcal-${index}`)?.value || item.kcal));
             const pr = Number(document.getElementById(`editProt-${index}`)?.value || item.protein);
             const cb = Number(document.getElementById(`editCarb-${index}`)?.value || item.carbs);
             const ft = Number(document.getElementById(`editFat-${index}`)?.value || item.fett);
 
+            item.time = tm;
             item.amount = amt;
             item.kcal = kc;
             item.protein = pr;
@@ -1112,7 +977,6 @@
             dayData.meals[index] = item;
             saveDayData(dayData);
 
-            // Propagate seamlessly back to scaling dictionary
             const dictionary = JSON.parse(localStorage.getItem('food_dictionary')) || {};
             dictionary[item.name.toLowerCase().trim()] = { amount: amt, kcal: kc, protein: pr, carbs: cb, fett: ft };
             localStorage.setItem('food_dictionary', JSON.stringify(dictionary));
@@ -1129,7 +993,6 @@
             }
         }
 
-        // --- APP OPTIONS CONFIG MANAGEMENT ---
         function openSettings() {
             document.getElementById('settingsOverlay').classList.add('show');
         }
@@ -1142,11 +1005,30 @@
             const key = document.getElementById('apiKeyInput').value.trim();
             const goal = document.getElementById('goalInput').value.trim();
             
+            const pCarbs = parseInt(document.getElementById('pctCarbs').value) || 0;
+            const pProt = parseInt(document.getElementById('pctProtein').value) || 0;
+            const pFat = parseInt(document.getElementById('pctFat').value) || 0;
+
+            if (pCarbs + pProt + pFat !== 100) {
+                document.getElementById('macroWarning').style.display = 'block';
+                return; 
+            }
+            document.getElementById('macroWarning').style.display = 'none';
+
             if(key) localStorage.setItem('groq_api_key', key);
             if(goal) {
                 localStorage.setItem('daily_kcal_goal', goal);
                 DEFAULT_GOAL = parseInt(goal);
             }
+            
+            localStorage.setItem('macro_pct_carbs', pCarbs);
+            localStorage.setItem('macro_pct_protein', pProt);
+            localStorage.setItem('macro_pct_fat', pFat);
+            
+            MACRO_CARBS = pCarbs;
+            MACRO_PROTEIN = pProt;
+            MACRO_FAT = pFat;
+
             closeSettings();
             updateUI();
         }
@@ -1154,11 +1036,26 @@
         function loadSettings() {
             const key = localStorage.getItem('groq_api_key');
             const goal = localStorage.getItem('daily_kcal_goal');
+            
+            const storedCarbs = localStorage.getItem('macro_pct_carbs');
+            const storedProt = localStorage.getItem('macro_pct_protein');
+            const storedFat = localStorage.getItem('macro_pct_fat');
+
             if(key) document.getElementById('apiKeyInput').value = key;
             if(goal) {
                 document.getElementById('goalInput').value = goal;
                 DEFAULT_GOAL = parseInt(goal);
             }
+            
+            if(storedCarbs && storedProt && storedFat) {
+                MACRO_CARBS = parseInt(storedCarbs);
+                MACRO_PROTEIN = parseInt(storedProt);
+                MACRO_FAT = parseInt(storedFat);
+            }
+
+            document.getElementById('pctCarbs').value = MACRO_CARBS;
+            document.getElementById('pctProtein').value = MACRO_PROTEIN;
+            document.getElementById('pctFat').value = MACRO_FAT;
         }
 
         function clearAllData() {
@@ -1168,7 +1065,6 @@
             }
         }
 
-        // --- ARTIFICIAL INTELLIGENCE PIPELINE INTEGRATION ---
         async function analyzeMeal() {
             const apiKey = localStorage.getItem('groq_api_key');
             if(!apiKey) {
@@ -1182,6 +1078,10 @@
                 alert("📝 Bitte gib ein, was du gegessen hast!");
                 return;
             }
+
+            // Zeit-Extraktion für den neuen Eintrag
+            const timeInputVal = document.getElementById('mealTimeInput').value;
+            const finalTime = timeInputVal || new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
@@ -1253,21 +1153,14 @@ Gib ausschließlich das reine JSON-Objekt zurück. Keine Erklärungen, kein Smal
                 }
 
                 const dayData = getDayData();
-                const now = new Date();
-                const currentTimeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
                 parsedItems.forEach(item => {
-                    item.time = currentTimeStr;
+                    item.time = finalTime;
                     item.isEditing = false;
-                    item.category = activeCategory; // Seamless routing to user chosen active slot layout
                     dayData.meals.push(item);
                 });
 
                 saveDayData(dayData);
-                
-                // Auto expand slot to see new items added instantly
-                document.getElementById(`slotCard-${activeCategory}`).classList.add('expanded');
-                
                 updateUI();
                 document.getElementById('mealInput').value = '';
 
